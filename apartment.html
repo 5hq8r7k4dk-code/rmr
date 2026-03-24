@@ -257,13 +257,46 @@
             gap: 2px;
         }
 
-        .star {
-            font-size: 22px;
+        .star-slot {
+            position: relative;
+            display: inline-block;
+            width: 22px;
+            height: 24px;
             cursor: pointer;
-            color: rgba(255,255,255,0.15);
-            transition: color 0.15s;
-            line-height: 1;
         }
+
+        .star-bg {
+            font-size: 22px;
+            color: rgba(255,255,255,0.15);
+            line-height: 1;
+            display: block;
+            user-select: none;
+        }
+
+        .star-fg {
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 22px;
+            color: #c8a96e;
+            line-height: 1;
+            overflow: hidden;
+            width: 0%;
+            white-space: nowrap;
+            display: block;
+            pointer-events: none;
+        }
+
+        .half {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            z-index: 1;
+        }
+
+        .half.left  { left: 0; }
+        .half.right { right: 0; }
 
         .submit-btn {
             margin-top: 14px;
@@ -304,6 +337,7 @@
         <a href="index.html">Home</a>
         <a href="apartment.html" class="active">Apartment</a>
         <a href="chat.html">Chat</a>
+        <a href="finding.html">Find</a>
         <a href="login.html" class="login nav-right">Login</a>
     </nav>
     <div class="page-content">
@@ -317,7 +351,7 @@
 
     <script>
         const people = ['Joe', 'Henry', 'Bobbert the Third', 'Nick', 'Richard'];
-        const categories = ['Cleanliness', 'Noise', 'Social', 'Sleep'];
+        const categories = ['Cleanliness', 'Noise', 'Social', 'Considerate', 'Communicative'];
         const ratings = {};
         let openDropdown = null;
 
@@ -378,13 +412,34 @@
                         stars.id = `stars-${person}-${cat}`;
 
                         for (let i = 1; i <= 5; i++) {
-                            const star = document.createElement('span');
-                            star.className = 'star';
-                            star.textContent = '★';
-                            star.onclick = () => setRating(person, cat, i);
-                            star.onmouseover = () => highlightStars(person, cat, i);
-                            star.onmouseout = () => restoreStars(person, cat);
-                            stars.appendChild(star);
+                            const slot = document.createElement('span');
+                            slot.className = 'star-slot';
+
+                            const bg = document.createElement('span');
+                            bg.className = 'star-bg';
+                            bg.textContent = '★';
+                            slot.appendChild(bg);
+
+                            const fg = document.createElement('span');
+                            fg.className = 'star-fg';
+                            fg.textContent = '★';
+                            slot.appendChild(fg);
+
+                            const leftHalf = document.createElement('span');
+                            leftHalf.className = 'half left';
+                            leftHalf.onclick = () => setRating(person, cat, i - 0.5);
+                            leftHalf.onmouseover = () => highlightStars(person, cat, i - 0.5);
+                            leftHalf.onmouseout = () => restoreStars(person, cat);
+                            slot.appendChild(leftHalf);
+
+                            const rightHalf = document.createElement('span');
+                            rightHalf.className = 'half right';
+                            rightHalf.onclick = () => setRating(person, cat, i);
+                            rightHalf.onmouseover = () => highlightStars(person, cat, i);
+                            rightHalf.onmouseout = () => restoreStars(person, cat);
+                            slot.appendChild(rightHalf);
+
+                            stars.appendChild(slot);
                         }
 
                         ratingRow.appendChild(stars);
@@ -419,10 +474,7 @@
         }
 
         function highlightStars(person, cat, value) {
-            const container = document.getElementById(`stars-${person}-${cat}`);
-            container.querySelectorAll('.star').forEach((star, i) => {
-                star.style.color = i < value ? '#c8a96e' : 'rgba(255,255,255,0.15)';
-            });
+            updateStarDisplay(person, cat, value);
         }
 
         function restoreStars(person, cat) {
@@ -431,8 +483,16 @@
 
         function updateStarDisplay(person, cat, value) {
             const container = document.getElementById(`stars-${person}-${cat}`);
-            container.querySelectorAll('.star').forEach((star, i) => {
-                star.style.color = i < value ? '#c8a96e' : 'rgba(255,255,255,0.15)';
+            container.querySelectorAll('.star-slot').forEach((slot, i) => {
+                const pos = i + 1;
+                const fg = slot.querySelector('.star-fg');
+                if (pos <= value) {
+                    fg.style.width = '100%';
+                } else if (pos - 0.5 <= value) {
+                    fg.style.width = '50%';
+                } else {
+                    fg.style.width = '0%';
+                }
             });
         }
 
