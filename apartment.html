@@ -4,47 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Apartment</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
     <style>
-        * {
+        *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        :root {
+            --bg: #0d0d0f;
+            --panel: #13131a;
+            --border: rgba(255,255,255,0.07);
+            --accent: #c8a96e;
+            --accent-dim: rgba(200,169,110,0.15);
+            --text: #f0ede8;
+            --muted: #7a7670;
+            --input-bg: #1a1a24;
+        }
+
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f2f2f2;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 0;
             min-height: 100vh;
+            padding: 0;
         }
 
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 80%, rgba(200,169,110,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 20%, rgba(120,100,200,0.05) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Nav */
         nav {
             width: 100%;
-            background: #333;
+            background: #0a0a0c;
+            border-bottom: 1px solid var(--border);
             display: flex;
             gap: 4px;
             padding: 10px 20px;
             align-items: center;
+            position: relative;
+            z-index: 10;
         }
 
         nav .nav-right {
             margin-left: auto;
         }
 
-        nav a.login {
-            background: #4a90d9;
-            color: white;
-        }
-
-        nav a.login:hover {
-            background: #357abd;
-        }
-
         nav a {
-            color: #ddd;
+            color: var(--muted);
             text-decoration: none;
             padding: 6px 14px;
             border-radius: 5px;
@@ -53,81 +72,106 @@
         }
 
         nav a:hover {
-            background: #555;
-            color: white;
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
         }
 
         nav a.active {
-            background: #4a90d9;
-            color: white;
+            background: var(--accent-dim);
+            color: var(--accent);
         }
 
+        nav a.login {
+            background: var(--accent);
+            color: #0d0d0f;
+            font-weight: 500;
+        }
+
+        nav a.login:hover {
+            opacity: 0.9;
+        }
+
+        /* Page content */
         .page-content {
-            padding: 40px 20px;
+            padding: 48px 20px;
             width: 100%;
             display: flex;
             justify-content: center;
+            position: relative;
+            z-index: 1;
         }
 
         .container {
-            background: white;
-            border: 2px solid #ccc;
-            border-radius: 10px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
             width: 480px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03);
+            animation: fadeUp 0.6s cubic-bezier(.22,1,.36,1) both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .header {
-            padding: 16px 24px;
+            padding: 18px 24px;
+            font-family: 'DM Serif Display', serif;
             font-size: 22px;
-            font-weight: bold;
-            border-bottom: 2px solid #ccc;
-            background: #f8f8f8;
-            border-radius: 10px 10px 0 0;
+            font-weight: 400;
+            border-bottom: 1px solid var(--border);
+            border-radius: 16px 16px 0 0;
+            color: var(--text);
+            letter-spacing: -0.3px;
         }
 
         .person-row {
             display: flex;
             align-items: center;
             padding: 12px 20px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border);
             position: relative;
         }
 
         .person-row:last-child {
             border-bottom: none;
-            border-radius: 0 0 10px 10px;
+            border-radius: 0 0 16px 16px;
         }
 
         .person-name {
             width: 110px;
-            font-size: 16px;
-            color: #333;
+            font-size: 15px;
+            color: var(--text);
+            font-weight: 400;
         }
 
         .rate-btn {
             flex: 1;
             padding: 8px 14px;
-            background: white;
-            border: 1px solid #bbb;
-            border-radius: 6px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.2s;
+            transition: background 0.2s, border-color 0.2s;
         }
 
         .rate-btn:hover {
-            background: #f5f5f5;
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.14);
         }
 
         .rate-btn.disabled {
-            background: #f5f5f5;
-            color: #aaa;
+            background: transparent;
+            color: var(--muted);
             cursor: default;
-            border-color: #e0e0e0;
+            border-color: rgba(255,255,255,0.04);
         }
 
         .status-col {
@@ -142,8 +186,8 @@
             width: 22px;
             height: 22px;
             border-radius: 50%;
-            border: 2px solid #bbb;
-            background: white;
+            border: 2px solid rgba(255,255,255,0.15);
+            background: transparent;
             transition: all 0.3s;
         }
 
@@ -154,7 +198,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: bold;
         }
 
@@ -163,8 +207,8 @@
         }
 
         .status-circle.self {
-            border-color: #e0e0e0;
-            background: #f5f5f5;
+            border-color: rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.03);
         }
 
         /* Dropdown panel */
@@ -174,12 +218,12 @@
             top: calc(100% + 4px);
             left: 110px;
             right: 56px;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 14px;
+            background: #16161f;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
             z-index: 200;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .dropdown.open {
@@ -187,22 +231,24 @@
         }
 
         .dropdown-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            color: #333;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            color: var(--muted);
         }
 
         .rating-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .rating-label {
             font-size: 13px;
-            color: #555;
+            color: var(--text);
             width: 90px;
         }
 
@@ -214,27 +260,42 @@
         .star {
             font-size: 22px;
             cursor: pointer;
-            color: #ddd;
+            color: rgba(255,255,255,0.15);
             transition: color 0.15s;
             line-height: 1;
         }
 
         .submit-btn {
-            margin-top: 12px;
+            margin-top: 14px;
             width: 100%;
-            padding: 8px;
-            background: #4a90d9;
-            color: white;
+            padding: 9px;
+            background: var(--accent);
+            color: #0d0d0f;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
             font-size: 13px;
-            font-weight: bold;
-            transition: background 0.2s;
+            font-weight: 500;
+            transition: opacity 0.2s, transform 0.15s;
         }
 
         .submit-btn:hover {
-            background: #357abd;
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        footer {
+            width: 100%;
+            text-align: center;
+            padding: 16px;
+            font-size: 13px;
+            color: var(--muted);
+            background: #0a0a0c;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
@@ -243,18 +304,16 @@
         <a href="index.html">Home</a>
         <a href="apartment.html" class="active">Apartment</a>
         <a href="chat.html">Chat</a>
-<a href="login.html" class="login nav-right">Login</a>
+        <a href="login.html" class="login nav-right">Login</a>
     </nav>
     <div class="page-content">
-    <div class="container">
-        <div class="header">Your Apartment:</div>
-        <div id="people-list"></div>
-    </div>
+        <div class="container">
+            <div class="header">Your Apartment</div>
+            <div id="people-list"></div>
+        </div>
     </div>
 
-    <footer style="width:100%; text-align:center; padding:16px; font-size:13px; color:#888; background:#f8f8f8; border-top:1px solid #e0e0e0; margin-top:auto;">
-        &copy;RMR Team 2026
-    </footer>
+    <footer>&copy; RMR Team 2026</footer>
 
     <script>
         const people = ['Joe', 'Henry', 'Bobbert the Third', 'Nick', 'Richard'];
@@ -302,7 +361,7 @@
 
                     const title = document.createElement('div');
                     title.className = 'dropdown-title';
-                    title.textContent = `Rate ${person}:`;
+                    title.textContent = `Rate ${person}`;
                     dropdown.appendChild(title);
 
                     categories.forEach(cat => {
@@ -362,7 +421,7 @@
         function highlightStars(person, cat, value) {
             const container = document.getElementById(`stars-${person}-${cat}`);
             container.querySelectorAll('.star').forEach((star, i) => {
-                star.style.color = i < value ? '#f5a623' : '#ddd';
+                star.style.color = i < value ? '#c8a96e' : 'rgba(255,255,255,0.15)';
             });
         }
 
@@ -373,7 +432,7 @@
         function updateStarDisplay(person, cat, value) {
             const container = document.getElementById(`stars-${person}-${cat}`);
             container.querySelectorAll('.star').forEach((star, i) => {
-                star.style.color = i < value ? '#f5a623' : '#ddd';
+                star.style.color = i < value ? '#c8a96e' : 'rgba(255,255,255,0.15)';
             });
         }
 

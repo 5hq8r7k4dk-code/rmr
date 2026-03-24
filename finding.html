@@ -243,16 +243,104 @@
         <a href="index.html">Home</a>
         <a href="apartment.html" class="active">Apartment</a>
         <a href="chat.html">Chat</a>
-        <a href="rating.html">Rating</a>
+        <a href="finding.html">Find</a>
         <a href="login.html" class="login nav-right">Login</a>
     </nav>
     <div class="page-content">
     <div class="container">
-        <div class="header">Your Apartment:</div>
-        <div id="people-list"></div>
+    <div class="header">RateMyRoommate</div>
+
+    <!-- Search -->
+    <div style="padding:16px 20px;">
+        <input 
+            type="text" 
+            id="search" 
+            placeholder="Search apartments..."
+            style="width:100%; padding:10px; border-radius:6px; border:1px solid #ccc;"
+        >
+    </div>
+
+    <!-- Results -->
+    <div id="results"></div>
     </div>
     </div>
 
     <footer style="width:100%; text-align:center; padding:16px; font-size:13px; color:#888; background:#f8f8f8; border-top:1px solid #e0e0e0; margin-top:auto;">
         &copy;RMR Team 2026
     </footer>
+
+    <script>
+const apartments = [
+    {
+        name: "Pine View Apartments",
+        units: ["101", "102", "201", "202"]
+    },
+    {
+        name: "Mountain Ridge",
+        units: ["A1", "A2", "B1"]
+    },
+    {
+        name: "Campus Court",
+        units: ["12", "14", "16"]
+    }
+];
+
+const searchInput = document.getElementById("search");
+const results = document.getElementById("results");
+
+function renderApartments(list) {
+    results.innerHTML = "";
+
+    list.forEach(apartment => {
+        const aptDiv = document.createElement("div");
+        aptDiv.className = "person-row";
+        aptDiv.style.flexDirection = "column";
+        aptDiv.style.alignItems = "flex-start";
+
+        const title = document.createElement("div");
+        title.textContent = apartment.name;
+        title.style.fontWeight = "bold";
+        title.style.marginBottom = "8px";
+
+        const unitContainer = document.createElement("div");
+        unitContainer.style.display = "flex";
+        unitContainer.style.flexWrap = "wrap";
+        unitContainer.style.gap = "6px";
+
+        apartment.units.forEach(unit => {
+            const btn = document.createElement("button");
+            btn.textContent = "Unit " + unit;
+            btn.style.padding = "6px 10px";
+            btn.style.border = "1px solid #bbb";
+            btn.style.borderRadius = "6px";
+            btn.style.background = "white";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", () => {
+                // Redirect to rating page with params
+                window.location.href = `rating.html?apt=${encodeURIComponent(apartment.name)}&unit=${unit}`;
+            });
+
+            unitContainer.appendChild(btn);
+        });
+
+        aptDiv.appendChild(title);
+        aptDiv.appendChild(unitContainer);
+        results.appendChild(aptDiv);
+    });
+}
+
+// Initial render
+renderApartments(apartments);
+
+// Search filter
+searchInput.addEventListener("input", () => {
+    const value = searchInput.value.toLowerCase();
+
+    const filtered = apartments.filter(a =>
+        a.name.toLowerCase().includes(value)
+    );
+
+    renderApartments(filtered);
+});
+</script>
