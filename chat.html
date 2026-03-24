@@ -1,11 +1,1203 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Residency Review — Tenant Management</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Lato:wght@300;400;700&family=Lato+Mono:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap');
+
+:root {
+  --cream: #faf7f2;
+  --cream2: #f3ede3;
+  --cream3: #ebe3d5;
+  --ink: #1c1a17;
+  --ink2: #3d3a34;
+  --ink3: #6b6560;
+  --ink4: #a09890;
+  --rust: #c0622a;
+  --rust-light: #f0e0d4;
+  --gold: #b8922a;
+  --gold-light: #f5ecd4;
+  --sage: #4a6741;
+  --sage-light: #dce8d8;
+  --border: #ddd5c8;
+  --border2: #e8e0d4;
+  --shadow: rgba(28,26,23,0.08);
+  --shadow2: rgba(28,26,23,0.14);
+  --radius: 14px;
+  --radius-sm: 9px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Outfit', sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--ink);
+  padding: 0 28px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--rust), var(--gold), var(--rust));
+  opacity: 0.7;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-mark {
+  width: 30px; height: 30px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+
+.logo-name {
+  font-family: 'Source Serif 4', serif;
+  font-weight: 300;
+  font-size: 17px;
+  color: white;
+  letter-spacing: 0.01em;
+}
+
+.logo-name strong {
+  font-weight: 600;
+  color: #f0dcc8;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.15);
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  font-family: 'DM Mono', monospace;
+}
+
+.pulse {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #6fcf97;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(111,207,151,0.4); }
+  50% { opacity:0.8; box-shadow: 0 0 0 4px rgba(111,207,151,0); }
+}
+
+/* ── Layout ── */
+.body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Left Panel ── */
+.panel {
+  width: 290px;
+  background: white;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.panel-top {
+  padding: 18px 18px 0;
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-family: 'Source Serif 4', serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--ink2);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-btn {
+  font-size: 11px;
+  color: var(--rust);
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  padding: 3px 8px;
+  border: 1px solid var(--rust-light);
+  border-radius: 100px;
+  background: var(--rust-light);
+  transition: all 0.15s;
+}
+
+.add-btn:hover { background: var(--rust); color: white; border-color: var(--rust); }
+
+/* Score filter */
+.filter-block {
+  margin-bottom: 14px;
+}
+
+.filter-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink4);
+  margin-bottom: 8px;
+  font-family: 'DM Mono', monospace;
+}
+
+.star-filter {
+  display: flex;
+  gap: 4px;
+}
+
+.sf-star {
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.1s;
+  opacity: 0.3;
+  color: var(--gold);
+  user-select: none;
+}
+
+.sf-star.lit { opacity: 1; }
+.sf-star:hover { transform: scale(1.15); }
+
+.sf-label {
+  font-size: 11px;
+  color: var(--ink4);
+  margin-left: 6px;
+  align-self: center;
+  font-family: 'DM Mono', monospace;
+}
+
+/* Keyword filter */
+.kw-input {
+  width: 100%;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 11px;
+  font-size: 12.5px;
+  color: var(--ink);
+  outline: none;
+  font-family: 'Outfit', sans-serif;
+  transition: border-color 0.2s;
+}
+
+.kw-input:focus { border-color: var(--rust); }
+.kw-input::placeholder { color: var(--ink4); }
+
+.kw-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.kwtag {
+  padding: 3px 9px;
+  background: var(--rust-light);
+  border: 1px solid #e0c4b4;
+  border-radius: 100px;
+  font-size: 11px;
+  color: var(--rust);
+  cursor: pointer;
+  display: flex; align-items: center; gap: 4px;
+  transition: all 0.15s;
+}
+
+.kwtag:hover { background: var(--rust); color: white; border-color: var(--rust); }
+
+.divider { height: 1px; background: var(--border2); margin: 14px 0; }
+
+/* Tenant list */
+.tenant-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 10px 12px;
+}
+
+.tenant-list::-webkit-scrollbar { width: 3px; }
+.tenant-list::-webkit-scrollbar-track { background: transparent; }
+.tenant-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.tenant-card {
+  padding: 11px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  margin-bottom: 3px;
+  position: relative;
+}
+
+.tenant-card:hover { background: var(--cream); border-color: var(--border2); }
+.tenant-card.selected { background: var(--cream2); border-color: var(--rust); }
+
+.tc-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.tc-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+  font-family: 'Source Serif 4', serif;
+}
+
+.tc-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  flex: 1;
+  line-height: 1.2;
+}
+
+.tc-unit {
+  font-size: 10.5px;
+  color: var(--ink4);
+  font-family: 'DM Mono', monospace;
+}
+
+.tc-stars {
+  display: flex;
+  gap: 1px;
+  margin-top: 5px;
+  padding-left: 43px;
+}
+
+.tc-star { font-size: 12px; color: var(--gold); opacity: 0.25; }
+.tc-star.lit { opacity: 1; }
+
+.tc-snippet {
+  font-size: 11px;
+  color: var(--ink3);
+  margin-top: 4px;
+  padding-left: 43px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.empty-list {
+  padding: 20px;
+  text-align: center;
+  color: var(--ink4);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+/* ── Chat Area ── */
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--cream);
+}
+
+/* Context strip */
+.context-strip {
+  background: white;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+  min-height: 52px;
+}
+
+.cs-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Source Serif 4', serif;
+  flex-shrink: 0;
+}
+
+.cs-name {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.cs-meta {
+  font-size: 11.5px;
+  color: var(--ink3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cs-stars { display: flex; gap: 1px; }
+.cs-star { font-size: 11px; color: var(--gold); opacity: 0.2; }
+.cs-star.lit { opacity: 1; }
+
+.cs-sep { width: 1px; height: 16px; background: var(--border); }
+
+.cs-unit {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--ink4);
+}
+
+.cs-hint {
+  font-size: 12px;
+  color: var(--ink4);
+  font-style: italic;
+}
+
+/* Messages */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.messages::-webkit-scrollbar { width: 4px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Empty state */
+.empty-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+.empty-glyph {
+  font-size: 42px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-title {
+  font-family: 'Source Serif 4', serif;
+  font-size: 21px;
+  font-weight: 300;
+  color: var(--ink2);
+  margin-bottom: 8px;
+}
+
+.empty-sub {
+  font-size: 13.5px;
+  color: var(--ink4);
+  max-width: 340px;
+  line-height: 1.65;
+}
+
+.empty-prompts {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.ep-btn {
+  text-align: left;
+  padding: 11px 16px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--ink2);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Outfit', sans-serif;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+.ep-btn:hover {
+  border-color: var(--rust);
+  color: var(--rust);
+  box-shadow: 0 2px 8px var(--shadow2);
+}
+
+.ep-icon { font-size: 15px; opacity: 0.7; }
+
+/* Messages */
+.msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 720px;
+  animation: msgIn 0.25s ease;
+}
+
+@keyframes msgIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+.msg.user { align-self: flex-end; }
+.msg.assistant { align-self: flex-start; }
+
+.msg-bubble {
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.msg.user .msg-bubble {
+  background: var(--ink);
+  color: var(--cream);
+  border-bottom-right-radius: 4px;
+}
+
+.msg.assistant .msg-bubble {
+  background: white;
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+  color: var(--ink2);
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+.msg-time {
+  font-size: 10px;
+  color: var(--ink4);
+  margin-top: 4px;
+  font-family: 'DM Mono', monospace;
+}
+
+.msg.user .msg-time { text-align: right; }
+
+/* AI info card inside bubble */
+.review-card {
+  background: var(--cream);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-top: 10px;
+  font-size: 12.5px;
+}
+
+.rc-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ink4);
+  font-family: 'DM Mono', monospace;
+  margin-bottom: 7px;
+}
+
+.rc-stars { display: flex; gap: 3px; margin-bottom: 10px; }
+.rc-star { font-size: 18px; color: var(--gold); opacity: 0.2; }
+.rc-star.lit { opacity: 1; }
+
+.rc-text {
+  color: var(--ink2);
+  line-height: 1.6;
+  font-size: 12.5px;
+}
+
+.kw-match {
+  background: #fef3cd;
+  border-bottom: 1.5px solid var(--gold);
+  color: #7a5c10;
+  padding: 0 2px;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+/* Thinking */
+.thinking-bubble {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  border-bottom-left-radius: 4px;
+  padding: 14px 18px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+.thinking-bubble span {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--ink4);
+  animation: bob 1.3s ease-in-out infinite;
+}
+
+.thinking-bubble span:nth-child(2) { animation-delay: 0.18s; }
+.thinking-bubble span:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes bob {
+  0%,60%,100% { transform:translateY(0); opacity:0.35; }
+  30% { transform:translateY(-5px); opacity:1; }
+}
+
+/* ── Input area ── */
+.input-area {
+  background: white;
+  border-top: 1px solid var(--border);
+  padding: 14px 22px 16px;
+  flex-shrink: 0;
+}
+
+.quick-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.qbtn {
+  padding: 5px 13px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--cream);
+  color: var(--ink3);
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+}
+
+.qbtn:hover {
+  border-color: var(--rust);
+  color: var(--rust);
+  background: var(--rust-light);
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.chat-textarea {
+  flex: 1;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 15px;
+  font-size: 13.5px;
+  color: var(--ink);
+  font-family: 'Outfit', sans-serif;
+  outline: none;
+  resize: none;
+  line-height: 1.5;
+  min-height: 44px;
+  max-height: 120px;
+  transition: border-color 0.2s;
+}
+
+.chat-textarea:focus { border-color: var(--rust); background: white; }
+.chat-textarea::placeholder { color: var(--ink4); }
+
+.send-btn {
+  width: 44px; height: 44px;
+  background: var(--ink);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: white;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.send-btn:hover { background: var(--rust); }
+.send-btn:active { transform: scale(0.94); }
+.send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Modal ── */
+.modal-bg {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(28,26,23,0.5);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-bg.open { display: flex; }
+
+.modal {
+  background: white;
+  border-radius: var(--radius);
+  padding: 26px;
+  width: 460px;
+  max-width: 92vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-title {
+  font-family: 'Source Serif 4', serif;
+  font-size: 18px;
+  font-weight: 400;
+  margin-bottom: 18px;
+  color: var(--ink);
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.modal-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ink4);
+  font-family: 'DM Mono', monospace;
+}
+
+.modal-input {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 13.5px;
+  color: var(--ink);
+  font-family: 'Outfit', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.modal-input:focus { border-color: var(--rust); background: white; }
+.modal-input::placeholder { color: var(--ink4); }
+
+textarea.modal-input { resize: vertical; min-height: 90px; line-height: 1.5; }
+
+/* Star picker */
+.star-picker { display: flex; gap: 6px; }
+
+.sp-star {
+  font-size: 26px;
+  cursor: pointer;
+  color: var(--gold);
+  opacity: 0.25;
+  transition: all 0.12s;
+  user-select: none;
+}
+
+.sp-star.lit { opacity: 1; }
+.sp-star:hover { transform: scale(1.1); }
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+.modal-btn {
+  padding: 9px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--cream);
+  color: var(--ink2);
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.15s;
+}
+
+.modal-btn.primary {
+  background: var(--ink);
+  color: white;
+  border-color: var(--ink);
+}
+
+.modal-btn.primary:hover { background: var(--rust); border-color: var(--rust); }
+.modal-btn:hover { border-color: var(--ink3); }
+</style>
 </head>
 <body>
-    Chat page
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-mark">🏠</div>
+    <div class="logo-name"><strong>Residency</strong> Review</div>
+  </div>
+  <div class="header-right">
+    <div class="status-pill"><div class="pulse"></div>AI Active</div>
+  </div>
+</div>
+
+<div class="body">
+
+  <!-- Left Panel -->
+  <div class="panel">
+    <div class="panel-top">
+      <div class="panel-title">
+        Tenants
+        <span class="add-btn" onclick="openModal()">+ Add Tenant</span>
+      </div>
+
+      <!-- Star filter -->
+      <div class="filter-block">
+        <div class="filter-label">Minimum Rating</div>
+        <div class="star-filter" id="star-filter">
+          <span class="sf-star" data-val="1" onclick="setStarFilter(1)">★</span>
+          <span class="sf-star" data-val="2" onclick="setStarFilter(2)">★</span>
+          <span class="sf-star" data-val="3" onclick="setStarFilter(3)">★</span>
+          <span class="sf-star" data-val="4" onclick="setStarFilter(4)">★</span>
+          <span class="sf-star" data-val="5" onclick="setStarFilter(5)">★</span>
+          <span class="sf-label" id="sf-label">Any</span>
+        </div>
+      </div>
+
+      <!-- Keyword filter -->
+      <div class="filter-block">
+        <div class="filter-label">Keyword Filter</div>
+        <input class="kw-input" id="kw-input" type="text" placeholder="e.g. noise, pets, damage…" onkeydown="handleKwKey(event)">
+        <div class="kw-tags" id="kw-tags"></div>
+      </div>
+
+      <div class="divider"></div>
+    </div>
+
+    <div class="tenant-list" id="tenant-list"></div>
+  </div>
+
+  <!-- Chat -->
+  <div class="chat">
+
+    <!-- Context strip -->
+    <div class="context-strip" id="context-strip">
+      <span class="cs-hint">Select a tenant to review, or ask about all tenants.</span>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages" id="messages">
+      <div class="empty-chat" id="empty-chat">
+        <div class="empty-glyph">🏘️</div>
+        <div class="empty-title">Tenant Review Assistant</div>
+        <div class="empty-sub">Select a tenant from the panel or ask a question about your whole roster.</div>
+        <div class="empty-prompts">
+          <div class="ep-btn" onclick="quickSend('Who are the highest-rated tenants?')"><span class="ep-icon">⭐</span> Who are the highest-rated tenants?</div>
+          <div class="ep-btn" onclick="quickSend('Summarize any tenants with complaints or negative keywords in their reviews.')"><span class="ep-icon">⚠️</span> Summarize tenants with complaints</div>
+          <div class="ep-btn" onclick="quickSend('Find tenants with noise or disturbance mentions in their reviews.')"><span class="ep-icon">🔍</span> Filter by noise complaints</div>
+          <div class="ep-btn" onclick="quickSend('Give me a full roster overview ranked by rating.')"><span class="ep-icon">📋</span> Full roster ranked by rating</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <div class="quick-row">
+        <button class="qbtn" onclick="quickSend('Summarize this tenant\'s review highlights.')">Summarize</button>
+        <button class="qbtn" onclick="quickSend('What keywords or concerns stand out in this review?')">Keywords</button>
+        <button class="qbtn" onclick="quickSend('Would you recommend renewing this tenant\'s lease? Why?')">Renewal Recommendation</button>
+        <button class="qbtn" onclick="quickSend('Compare this tenant to others on the roster.')">Compare</button>
+      </div>
+      <div class="input-row">
+        <textarea class="chat-textarea" id="chat-input" placeholder="Ask about a tenant or your full roster…" rows="1"
+          onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="send-btn" onclick="sendMsg()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Tenant Modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-title">Add Tenant</div>
+    <div class="modal-field">
+      <div class="modal-label">Full Name</div>
+      <input class="modal-input" id="m-name" placeholder="e.g. Sarah Johnson">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Unit</div>
+      <input class="modal-input" id="m-unit" placeholder="e.g. 4B, Building 2">
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Star Rating</div>
+      <div class="star-picker" id="star-picker">
+        <span class="sp-star" data-v="1" onclick="pickStar(1)">★</span>
+        <span class="sp-star" data-v="2" onclick="pickStar(2)">★</span>
+        <span class="sp-star" data-v="3" onclick="pickStar(3)">★</span>
+        <span class="sp-star" data-v="4" onclick="pickStar(4)">★</span>
+        <span class="sp-star" data-v="5" onclick="pickStar(5)">★</span>
+      </div>
+    </div>
+    <div class="modal-field">
+      <div class="modal-label">Review / Description</div>
+      <textarea class="modal-input" id="m-review" placeholder="Paste or write the tenant review here…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="saveTenant()">Add Tenant</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Data ─────────────────────────────────────────────────────────────────────
+let tenants = [
+  { id:1, name:"Marcus Webb",    unit:"3A", stars:5, review:"Marcus is an exemplary tenant. Consistently pays rent on time, keeps the unit immaculate, and is courteous to neighbors. No complaints on record. Quiet, respectful, and responsive to all communications. Highly recommend for lease renewal." },
+  { id:2, name:"Diana Pereira",  unit:"1C", stars:4, review:"Diana is a reliable tenant with generally positive peer reviews. Minor noise complaint in March (resolved quickly). Maintains the unit well and communicates promptly. One late payment in Q3 but paid within the grace period. Good standing overall." },
+  { id:3, name:"Tyler Okafor",   unit:"2B", stars:2, review:"Tyler has received multiple noise complaints from neighboring tenants — loud music late at night on three documented occasions. Unit inspection showed minor damage to the kitchen. Communication is inconsistent; slow to respond to notices. Lease renewal requires performance improvement." },
+  { id:4, name:"Priya Suresh",   unit:"5D", stars:5, review:"Priya is an outstanding community member. She organized the building's recycling initiative and has only positive reviews from neighbors. Spotless unit, no late payments, zero complaints. Renewing her lease is a priority." },
+  { id:5, name:"Leon Marsh",     unit:"2A", stars:3, review:"Leon pays rent reliably but has been cited for unauthorized pet in the unit (no-pets policy). One noise complaint from the tenant below him. Unit condition is acceptable but not well-maintained. Situation is being monitored." },
+];
+
+let selectedId = null;
+let starFilterMin = 0;
+let keywords = [];
+let pickedStar = 0;
+let history = [];
+
+// ── Render Tenants ────────────────────────────────────────────────────────────
+function renderTenants() {
+  const list = document.getElementById('tenant-list');
+  const visible = tenants.filter(t => {
+    if (t.stars < starFilterMin) return false;
+    if (keywords.length > 0) {
+      const rev = t.review.toLowerCase();
+      if (!keywords.some(k => rev.includes(k))) return false;
+    }
+    return true;
+  });
+
+  if (!visible.length) {
+    list.innerHTML = `<div class="empty-list">No tenants match the current filters.</div>`;
+    return;
+  }
+
+  list.innerHTML = visible.map(t => {
+    const initials = t.name.split(' ').map(w=>w[0]).join('');
+    const [bg,fg] = avatarColors(t.name);
+    const snippet = t.review.substring(0,80) + (t.review.length>80?'…':'');
+    return `<div class="tenant-card ${selectedId===t.id?'selected':''}" onclick="selectTenant(${t.id})">
+      <div class="tc-top">
+        <div class="tc-avatar" style="background:${bg};color:${fg}">${initials}</div>
+        <div>
+          <div class="tc-name">${t.name}</div>
+          <div class="tc-unit">Unit ${t.unit}</div>
+        </div>
+      </div>
+      <div class="tc-stars">${starsHtml(t.stars,'tc-star')}</div>
+      <div class="tc-snippet">${snippet}</div>
+    </div>`;
+  }).join('');
+}
+
+function starsHtml(n, cls) {
+  return [1,2,3,4,5].map(i=>`<span class="${cls}${i<=n?' lit':''}" >★</span>`).join('');
+}
+
+function avatarColors(name) {
+  const palettes = [
+    ['#f0dcc8','#7a3e10'], ['#dce8d8','#2e5228'], ['#d8e2f0','#1e3a6e'],
+    ['#f0e0d8','#6e2e1e'], ['#e8d8f0','#4a1e6e'], ['#f5ecd4','#7a5c10'],
+  ];
+  let h = 0;
+  for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffffff;
+  return palettes[Math.abs(h) % palettes.length];
+}
+
+// ── Select Tenant ─────────────────────────────────────────────────────────────
+function selectTenant(id) {
+  selectedId = id;
+  history = [];
+  const t = tenants.find(x=>x.id===id);
+  const initials = t.name.split(' ').map(w=>w[0]).join('');
+  const [bg,fg] = avatarColors(t.name);
+
+  document.getElementById('context-strip').innerHTML = `
+    <div class="cs-avatar" style="background:${bg};color:${fg}">${initials}</div>
+    <div>
+      <div class="cs-name">${t.name}</div>
+      <div class="cs-meta">
+        <div class="cs-stars">${starsHtml(t.stars,'cs-star')}</div>
+        <div class="cs-sep"></div>
+        <div class="cs-unit">Unit ${t.unit}</div>
+      </div>
+    </div>`;
+
+  const msgs = document.getElementById('messages');
+  msgs.innerHTML = '';
+
+  // Auto-load card
+  const kwHighlighted = highlightKw(t.review);
+  pushMsg('assistant', `<strong>${t.name}</strong> — Unit ${t.unit}
+    <div class="review-card">
+      <div class="rc-label">Peer Rating</div>
+      <div class="rc-stars">${starsHtml(t.stars,'rc-star')}</div>
+      <div class="rc-label">Review</div>
+      <div class="rc-text">${kwHighlighted}</div>
+    </div>
+    Ask me anything about ${t.name.split(' ')[0]}.`);
+
+  renderTenants();
+}
+
+function highlightKw(text) {
+  if (!keywords.length) return escHtml(text);
+  let result = escHtml(text);
+  keywords.forEach(k => {
+    const re = new RegExp(`(${k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    result = result.replace(re, `<span class="kw-match">$1</span>`);
+  });
+  return result;
+}
+
+// ── Messaging ─────────────────────────────────────────────────────────────────
+function pushMsg(role, html) {
+  const msgs = document.getElementById('messages');
+  const empty = document.getElementById('empty-chat');
+  if (empty) empty.remove();
+
+  const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="msg-bubble">${html}</div><div class="msg-time">${time}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addThinking() {
+  const msgs = document.getElementById('messages');
+  const d = document.createElement('div');
+  d.className = 'msg assistant'; d.id = 'thinking';
+  d.innerHTML = `<div class="thinking-bubble"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeThinking() {
+  const el = document.getElementById('thinking');
+  if (el) el.remove();
+}
+
+async function sendMsg() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = ''; autoResize(input);
+
+  pushMsg('user', escHtml(text));
+  history.push({ role:'user', content: text });
+  document.getElementById('send-btn').disabled = true;
+  addThinking();
+
+  try {
+    const sys = buildSystem();
+    const res = await callAI(sys, history);
+    removeThinking();
+    pushMsg('assistant', fmt(res));
+    history.push({ role:'assistant', content: res });
+  } catch(e) {
+    removeThinking();
+    pushMsg('assistant', `<span style="color:var(--rust)">⚠ ${e.message}</span>`);
+  }
+  document.getElementById('send-btn').disabled = false;
+}
+
+function buildSystem() {
+  const roster = tenants.map(t =>
+    `[Name: ${t.name} | Unit: ${t.unit} | Stars: ${t.stars}/5 | Review: "${t.review}"]`
+  ).join('\n');
+
+  const focused = selectedId
+    ? (() => { const t = tenants.find(x=>x.id===selectedId);
+        return `\nCurrently reviewing: ${t.name}, Unit ${t.unit}, ${t.stars}/5 stars.\nFull review: "${t.review}"`; })()
+    : '\nNo specific tenant selected — respond about the full roster.';
+
+  const kwCtx = keywords.length ? `\nActive keyword filters: ${keywords.join(', ')}` : '';
+
+  return `You are a professional property management AI assistant helping a property manager review and evaluate tenants.
+
+TENANT ROSTER:
+${roster}
+${focused}
+${kwCtx}
+
+Guidelines:
+- Ratings are 1–5 stars (peer reviews from other tenants plus management observations)
+- Be concise, professional, and objective
+- Surface patterns, keyword matches, and actionable insights
+- For lease renewal decisions, weigh star rating AND the written review content
+- Highlight any mentions of noise, damage, late payments, pets, or policy violations
+- Be neutral — base all assessments on what's in the review data
+- Format: short paragraphs and bullet points where helpful. Bold key terms.`;
+}
+
+async function callAI(system, msgs) {
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:1000,
+      system,
+      messages: msgs
+    })
+  });
+  if (!r.ok) throw new Error(`API ${r.status}`);
+  const d = await r.json();
+  return d.content[0].text;
+}
+
+function fmt(t) {
+  return t
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/^[-•] (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul style="padding-left:16px;margin:6px 0">$1</ul>')
+    .replace(/\n\n/g,'<br><br>')
+    .replace(/\n/g,'<br>');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+function setStarFilter(n) {
+  starFilterMin = (starFilterMin === n) ? 0 : n;
+  const stars = document.querySelectorAll('#star-filter .sf-star');
+  stars.forEach((s,i) => s.classList.toggle('lit', i < starFilterMin));
+  document.getElementById('sf-label').textContent = starFilterMin ? `${starFilterMin}+ stars` : 'Any';
+  renderTenants();
+}
+
+function handleKwKey(e) {
+  if (e.key !== 'Enter') return;
+  const input = document.getElementById('kw-input');
+  const kw = input.value.trim().toLowerCase();
+  if (!kw || keywords.includes(kw)) { input.value=''; return; }
+  keywords.push(kw);
+  input.value = '';
+  renderKwTags();
+  renderTenants();
+}
+
+function removeKw(k) {
+  keywords = keywords.filter(x=>x!==k);
+  renderKwTags();
+  renderTenants();
+}
+
+function renderKwTags() {
+  document.getElementById('kw-tags').innerHTML = keywords.map(k=>
+    `<div class="kwtag" onclick="removeKw('${k}')">${k} ✕</div>`
+  ).join('');
+}
+
+// ── Modal ────────────────────────────────────────────────────────────────────
+function openModal() {
+  document.getElementById('modal').classList.add('open');
+  pickedStar = 0;
+  renderStarPicker(0);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function pickStar(n) {
+  pickedStar = n;
+  renderStarPicker(n);
+}
+
+function renderStarPicker(n) {
+  document.querySelectorAll('#star-picker .sp-star').forEach((s,i)=>{
+    s.classList.toggle('lit', i < n);
+  });
+}
+
+function saveTenant() {
+  const name = document.getElementById('m-name').value.trim();
+  const unit = document.getElementById('m-unit').value.trim();
+  const review = document.getElementById('m-review').value.trim();
+  if (!name || !unit || !review || !pickedStar) {
+    alert('Please fill in all fields and select a star rating.'); return;
+  }
+  tenants.push({ id: Date.now(), name, unit, stars: pickedStar, review });
+  closeModal();
+  ['m-name','m-unit','m-review'].forEach(id => document.getElementById(id).value='');
+  renderTenants();
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function quickSend(text) {
+  document.getElementById('chat-input').value = text;
+  sendMsg();
+}
+
+function handleChatKey(e) {
+  if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+
+function autoResize(el) {
+  el.style.height='auto';
+  el.style.height = Math.min(el.scrollHeight,120)+'px';
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+renderTenants();
+</script>
 </body>
 </html>
