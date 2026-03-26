@@ -272,16 +272,48 @@
     <script>
 const apartments = [
     {
-        name: "Pine View Apartments",
+        name: "Birch Plaza",
         units: ["101", "102", "201", "202"]
     },
     {
-        name: "Mountain Ridge",
+        name: "North Point",
         units: ["A1", "A2", "B1"]
     },
     {
-        name: "Campus Court",
+        name: "The Cove",
         units: ["12", "14", "16"]
+    },
+    {
+        name: "Sundance",
+        units: ["1A", "1B", "2A", "2B"]
+    },
+    {
+        name: "The Lodge",
+        units: ["101", "102", "103", "201", "202"]
+    },
+    {
+        name: "The Gates",
+        units: ["Apt 1", "Apt 2", "Apt 3"]
+    },
+    {
+        name: "The Heritage Apartments",
+        units: ["Unit 1", "Unit 2", "Unit 3", "Unit 4"]
+    },
+    {
+        name: "Bunkhouse Apartments",
+        units: ["101", "102", "201", "202", "301", "302"]
+    },
+    {
+        name: "Cedars",
+        units: ["A1", "A2", "B1", "B2", "C1"]
+    },
+    {
+        name: "Nauvoo Housing",
+        units: ["Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5"]
+    },
+    {
+        name: "Somerset",
+        units: ["101", "102", "201", "202", "301", "302"]
     }
 ];
 
@@ -317,8 +349,8 @@ function renderApartments(list) {
             btn.style.cursor = "pointer";
 
             btn.addEventListener("click", () => {
-                // Redirect to rating page with params
-                window.location.href = `rating.html?apt=${encodeURIComponent(apartment.name)}&unit=${unit}`;
+                // Redirect to apartment page with params
+                window.location.href = `apartment.html?apt=${encodeURIComponent(apartment.name)}&unit=${unit}`;
             });
 
             unitContainer.appendChild(btn);
