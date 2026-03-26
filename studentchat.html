@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nest — Find Your Roommate</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap');
+
+:root {
+  --bg:        #f8f6f2;
+  --white:     #ffffff;
+  --s1:        #f2ede6;
+  --s2:        #ece5db;
+  --s3:        #e2d9cc;
+  --border:    #ddd6cb;
+  --border2:   #ede8e0;
+  --ink:       #1a1815;
+  --ink2:      #38342e;
+  --ink3:      #6b6358;
+  --ink4:      #a89f95;
+  --teal:      #287066;
+  --teal2:     #1f5c54;
+  --teal-bg:   #e4f0ee;
+  --teal-mid:  #b0d5cf;
+  --amber:     #b8731a;
+  --amber-bg:  #faeee0;
+  --amber-mid: #e8c490;
+  --rose:      #a83838;
+  --rose-bg:   #f5e4e4;
+  --gold:      #c49a1a;
+  --r:         14px;
+  --rsm:       9px;
+  --rxs:       6px;
+  --sh:        0 1px 6px rgba(26,24,21,.07);
+  --shmd:      0 4px 18px rgba(26,24,21,.10);
+  --shlg:      0 14px 50px rgba(26,24,21,.14);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ─── HEADER ─── */
+.hdr{
+  height:56px;
+  background:var(--ink);
+  display:flex;
+  align-items:center;
+  padding:0 22px;
+  justify-content:space-between;
+  flex-shrink:0;
+  position:relative;
+  z-index:20;
+}
+.hdr::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--teal),#6abaaf,var(--teal));
+}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-mark{
+  width:32px;height:32px;
+  border-radius:9px;
+  background:linear-gradient(135deg,var(--teal),#4aada0);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+}
+.logo-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:24px;
+  font-weight:500;
+  color:#f5f2ec;
+  letter-spacing:-0.3px;
+}
+.logo-tag{
+  font-size:10.5px;
+  color:rgba(255,255,255,.38);
+  font-family:'DM Mono',monospace;
+  letter-spacing:.06em;
+  margin-left:4px;
+  margin-top:1px;
+}
+.you-chip{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 13px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:100px;
+  font-size:12px;
+  color:rgba(255,255,255,.65);
+}
+.you-av{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--teal);
+  color:white;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;
+}
+
+/* ─── HAMBURGER ─── */
+.hamburger{
+  width:36px;height:36px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:8px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;padding:0;transition:all .15s;
+}
+.hamburger:hover{background:rgba(255,255,255,.18);}
+.hamburger span{
+  display:block;width:16px;height:1.5px;
+  background:rgba(255,255,255,.8);border-radius:2px;
+}
+
+/* ─── DRAWER ─── */
+.menu-overlay{
+  position:fixed;inset:0;
+  background:rgba(26,24,21,.45);
+  z-index:100;
+  opacity:0;pointer-events:none;
+  transition:opacity .25s;
+}
+.menu-overlay.open{opacity:1;pointer-events:all;}
+.menu-drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:340px;
+  background:var(--white);
+  border-left:1px solid var(--border);
+  z-index:101;
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  box-shadow:var(--shlg);
+}
+.menu-drawer.open{transform:translateX(0);}
+.menu-drawer-hdr{
+  padding:16px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.menu-close{
+  width:28px;height:28px;border-radius:50%;
+  border:1px solid var(--border);background:var(--s1);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:13px;color:var(--ink3);
+  transition:all .14s;
+}
+.menu-close:hover{background:var(--rose-bg);color:var(--rose);border-color:var(--rose-bg);}
+.menu-drawer-body{padding:18px;overflow-y:auto;flex:1;}
+
+/* ─── BROWSE PAGE ─── */
+.browse-page{
+  flex:1;display:flex;flex-direction:column;
+}
+.filter-bar{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+  box-shadow:var(--sh);
+}
+.filter-bar-inner{
+  display:flex;align-items:center;
+  gap:18px;padding:14px 28px;
+  flex-wrap:wrap;
+}
+.fb-group{display:flex;flex-direction:column;gap:5px;}
+.fb-group .flabel{margin-bottom:0;}
+.fb-sep{width:1px;height:28px;background:var(--border);flex-shrink:0;}
+.tenant-grid{
+  padding:36px 20px 60px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+}
+.main{
+  flex:1;display:flex;flex-direction:column;
+}
+.shown-chip{
+  font-size:10.5px;
+  font-family:'DM Mono',monospace;
+  background:var(--teal-bg);
+  color:var(--teal);
+  padding:2px 9px;border-radius:100px;
+  white-space:nowrap;
+}
+
+/* Star filter */
+.sf{display:flex;gap:3px;align-items:center;}
+.sf-s{
+  font-size:24px;cursor:pointer;
+  color:var(--gold);opacity:.2;
+  transition:all .12s;user-select:none;
+  line-height:1;
+}
+.sf-s.on{opacity:1;}
+.sf-s:hover{transform:scale(1.15);}
+.sf-clr{
+  font-size:11px;color:var(--ink4);
+  cursor:pointer;margin-left:6px;
+  font-family:'DM Mono',monospace;
+  display:none;
+  transition:color .13s;
+}
+.sf-clr:hover{color:var(--rose);}
+
+/* Budget pills */
+.pill-row{display:flex;gap:5px;flex-wrap:wrap;}
+.pill{
+  padding:6px 14px;border-radius:100px;
+  font-size:12px;
+  border:1px solid var(--border);
+  background:var(--s1);
+  color:var(--ink3);
+  cursor:pointer;transition:all .13s;
+  font-family:'DM Mono',monospace;
+  white-space:nowrap;
+}
+.pill:hover:not(.on){border-color:var(--amber);color:var(--amber);}
+.pill.on{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber);font-weight:700;}
+
+/* Lifestyle chips */
+.lchip-row{display:flex;flex-wrap:wrap;gap:5px;}
+.lchip{
+  padding:6px 13px;border-radius:100px;
+  font-size:12px;
+  border:1px solid var(--border2);
+  background:var(--s1);
+  color:var(--ink3);
+  cursor:pointer;transition:all .13s;user-select:none;
+  white-space:nowrap;
+}
+.lchip:hover:not(.on){border-color:var(--teal);color:var(--teal);}
+.lchip.on{background:var(--teal-bg);border-color:var(--teal-mid);color:var(--teal);font-weight:700;}
+
+/* Filter label */
+.filter-block{margin-bottom:13px;}
+.flabel{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+  color:var(--ink4);
+  font-family:'DM Mono',monospace;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+/* Card list */
+.card-list{flex:1;overflow-y:auto;padding:4px 10px 14px;}
+.card-list::-webkit-scrollbar{width:3px;}
+.card-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+.rcard{
+  background:var(--white);
+  border:1.5px solid var(--border2);
+  border-radius:var(--r);
+  padding:28px 36px;
+  cursor:default;
+  transition:all .17s;
+  box-shadow:var(--sh);
+  position:relative;
+  overflow:hidden;
+  width:100%;
+  max-width:680px;
+}
+.rcard:hover{border-color:var(--teal-mid);box-shadow:var(--shmd);}
+.rcard.sel{background:#f2faf9;border-color:var(--teal);}
+
+
+.rc-top{display:flex;gap:14px;align-items:center;}
+.rc-av{
+  width:62px;height:62px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;
+  font-family:'Cormorant Garamond',serif;
+  flex-shrink:0;
+}
+.rc-name{
+  font-size:20px;font-weight:600;line-height:1.2;color:var(--ink);
+  cursor:pointer;display:inline-block;
+  font-family:'Cormorant Garamond',serif;
+  transition:color .14s;
+}
+.rc-name:hover{color:var(--teal);text-decoration:underline;text-underline-offset:3px;}
+.rc-unit{font-size:10.5px;color:var(--ink4);font-family:'DM Mono',monospace;margin-top:1px;}
+.rc-stars{display:flex;gap:1px;margin-top:4px;}
+.rcs{font-size:18px;color:var(--gold);opacity:.18;}
+.rcs.on{opacity:1;}
+
+.rc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:7px;}
+.rctag{
+  padding:2px 8px;border-radius:100px;
+  font-size:10.5px;
+  background:var(--teal-bg);
+  border:1px solid var(--teal-mid);
+  color:var(--teal);
+}
+.rctag.budget{background:var(--amber-bg);border-color:var(--amber-mid);color:var(--amber);}
+
+.rc-bio{
+  font-size:14px;color:var(--ink3);line-height:1.7;
+  border-top:1px solid var(--border2);
+  padding-top:16px;
+  margin-top:4px;
+}
+
+.msg-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 13px;
+  background:var(--teal);color:white;
+  border:none;border-radius:var(--rxs);
+  font-size:11.5px;font-weight:600;
+  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all .14s;
+}
+.msg-btn:hover{background:var(--teal2);}
+
+.no-res{
+  text-align:center;padding:28px 14px;
+  color:var(--ink4);font-size:13px;line-height:1.7;
+}
+
+/* ─── MAIN RIGHT ─── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+
+/* Empty */
+.empty-main{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;padding:40px 24px;
+  animation:fdin .3s ease;
+}
+@keyframes fdin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.em-icon{font-size:52px;opacity:.3;margin-bottom:18px;}
+.em-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:400;font-style:italic;
+  color:var(--ink2);margin-bottom:8px;
+}
+.em-sub{font-size:13.5px;color:var(--ink4);max-width:300px;line-height:1.7;}
+
+/* Detail view */
+.detail{
+  padding:36px 32px 60px;
+  display:flex;flex-direction:column;gap:20px;
+  animation:fdin .25s ease;
+  max-width:800px;
+  margin:0 auto;
+  width:100%;
+}
+
+.dv-hero{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:24px 26px;
+  display:flex;gap:22px;align-items:flex-start;
+  box-shadow:var(--sh);
+}
+.dv-av{
+  width:70px;height:70px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:700;
+  font-family:'Cormorant Garamond',serif;
+  flex-shrink:0;
+}
+.dv-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:500;
+  color:var(--ink);margin-bottom:2px;
+  line-height:1.1;
+}
+.dv-unit{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--ink4);margin-bottom:10px;}
+.dv-stars{display:flex;gap:3px;margin-bottom:14px;}
+.dvs{font-size:22px;color:var(--gold);opacity:.18;}
+.dvs.on{opacity:1;}
+.dv-meta{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px;}
+.dv-chip{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 13px;border-radius:100px;
+  font-size:12px;border:1px solid var(--border);
+  background:var(--s1);color:var(--ink2);
+}
+.big-msg-btn{
+  padding:11px 24px;
+  background:var(--teal);color:white;
+  border:none;border-radius:var(--rsm);
+  font-size:13.5px;font-weight:700;
+  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all .15s;
+  display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 3px 12px rgba(40,112,102,.28);
+}
+.big-msg-btn:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 5px 16px rgba(40,112,102,.35);}
+
+.dv-sec{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:20px 22px;
+  box-shadow:var(--sh);
+}
+.dv-sec-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px;font-weight:500;
+  color:var(--ink2);margin-bottom:12px;
+  display:flex;align-items:center;gap:7px;
+}
+.dv-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.dvtag{
+  padding:5px 13px;border-radius:100px;
+  font-size:12px;font-weight:500;
+  background:var(--teal-bg);
+  border:1px solid var(--teal-mid);
+  color:var(--teal);
+}
+.dv-review{
+  font-size:13.5px;color:var(--ink2);
+  line-height:1.75;font-style:italic;
+  position:relative;padding-left:16px;
+}
+.dv-review::before{
+  content:'"';
+  position:absolute;left:0;top:-4px;
+  font-size:32px;font-family:'Cormorant Garamond',serif;
+  color:var(--ink4);line-height:1;
+}
+
+/* ─── CHAT PANEL ─── */
+.chat-panel{
+  position:fixed;
+  right:0;top:56px;bottom:0;
+  width:420px;
+  background:var(--white);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  z-index:60;
+  box-shadow:var(--shlg);
+}
+.chat-panel.open{transform:translateX(0);}
+
+/* Chat header */
+.cp-hdr{
+  padding:13px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;background:var(--white);
+}
+.cp-av{
+  width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;
+  font-family:'Cormorant Garamond',serif;
+  flex-shrink:0;
+}
+.cp-nm{font-size:14px;font-weight:600;line-height:1.2;}
+.cp-sub{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace;}
+.cp-x{
+  width:28px;height:28px;border-radius:50%;
+  border:1px solid var(--border);background:var(--s1);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:13px;color:var(--ink3);
+  transition:all .14s;
+}
+.cp-x:hover{background:var(--rose-bg);color:var(--rose);border-color:var(--rose-bg);}
+
+/* Messages */
+.cp-msgs{
+  flex:1;overflow-y:auto;
+  padding:14px 15px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.cp-msgs::-webkit-scrollbar{width:3px;}
+.cp-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+.cm{display:flex;flex-direction:column;max-width:85%;animation:popin .2s ease;}
+@keyframes popin{from{opacity:0;transform:scale(.95) translateY(4px)}to{opacity:1;transform:none}}
+.cm.me{align-self:flex-end;}
+.cm.them{align-self:flex-start;}
+.cm.sys{align-self:center;max-width:90%;}
+
+.cm-bub{
+  padding:9px 13px;border-radius:16px;
+  font-size:13px;line-height:1.55;
+}
+.cm.me .cm-bub{
+  background:var(--teal);color:white;
+  border-bottom-right-radius:4px;
+}
+.cm.them .cm-bub{
+  background:var(--s1);
+  border:1px solid var(--border2);
+  color:var(--ink2);
+  border-bottom-left-radius:4px;
+}
+.cm.sys .cm-bub{
+  background:var(--amber-bg);
+  border:1px solid var(--amber-mid);
+  color:var(--amber);
+  font-size:11.5px;font-style:italic;
+  border-radius:10px;text-align:center;
+}
+.cm-t{font-size:9.5px;color:var(--ink4);margin-top:3px;font-family:'DM Mono',monospace;}
+.cm.me .cm-t{text-align:right;}
+
+/* Typing */
+.typing-bub{
+  background:var(--s1);
+  border:1px solid var(--border2);
+  border-radius:14px;border-bottom-left-radius:4px;
+  padding:11px 14px;
+  display:flex;gap:4px;align-items:center;
+  width:fit-content;
+}
+.typing-bub span{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--ink4);
+  animation:tbounce 1.2s infinite;
+}
+.typing-bub span:nth-child(2){animation-delay:.16s;}
+.typing-bub span:nth-child(3){animation-delay:.32s;}
+@keyframes tbounce{
+  0%,60%,100%{transform:translateY(0);opacity:.3;}
+  30%{transform:translateY(-5px);opacity:1;}
+}
+
+/* ─── COMPAT FILTER BAR ─── */
+.compat-filter-bar{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+  box-shadow:var(--sh);
+}
+.compat-filter-inner{
+  display:flex;align-items:center;
+  gap:16px;padding:14px 28px;
+  flex-wrap:wrap;
+}
+.cfb-group{display:flex;flex-direction:column;gap:5px;}
+.cfb-group.cfb-tags{flex:1;min-width:200px;}
+.cfb-sep{width:1px;height:40px;background:var(--border);flex-shrink:0;}
+
+/* ─── COMPATIBILITY PANEL ─── */
+.back-nav{
+  display:flex;align-items:center;padding:10px 28px;
+  background:var(--white);border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.back-nav-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 14px;
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:var(--rsm);
+  font-size:12.5px;font-weight:600;
+  color:var(--ink3);
+  cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all .15s;
+}
+.back-nav-btn:hover{
+  background:var(--teal-bg);
+  border-color:var(--teal-mid);
+  color:var(--teal);
+}
+.back-nav-btn .arrow{font-size:15px;line-height:1;}
+
+.compat-panel{
+  flex:1;overflow-y:auto;
+  padding:26px 28px;
+  display:flex;flex-direction:column;gap:20px;
+  animation:fdin .25s ease;
+}
+.compat-panel::-webkit-scrollbar{width:4px;}
+.compat-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.cp-setup{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:20px 22px;
+  box-shadow:var(--sh);
+}
+.cp-setup-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:16px;font-weight:500;
+  color:var(--ink2);margin-bottom:4px;
+}
+.cp-setup-sub{font-size:12px;color:var(--ink4);margin-bottom:16px;line-height:1.5;}
+.cp-setup-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.cp-field{display:flex;flex-direction:column;gap:5px;}
+.cp-field-label{
+  font-size:10px;text-transform:uppercase;
+  letter-spacing:.09em;color:var(--ink4);
+  font-family:'DM Mono',monospace;
+}
+.cp-select{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--rsm);padding:8px 28px 8px 11px;
+  font-size:12.5px;color:var(--ink2);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  outline:none;cursor:pointer;transition:border-color .17s;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a89f95'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+.cp-select:focus{border-color:var(--teal);background-color:white;}
+.cp-tags-pick{display:flex;flex-wrap:wrap;gap:5px;}
+.cptag{
+  padding:4px 10px;border-radius:100px;font-size:11.5px;
+  border:1px solid var(--border2);background:var(--s1);color:var(--ink3);
+  cursor:pointer;transition:all .13s;user-select:none;
+}
+.cptag:hover:not(.on){border-color:var(--teal);color:var(--teal);}
+.cptag.on{background:var(--teal-bg);border-color:var(--teal-mid);color:var(--teal);font-weight:600;}
+.cp-setup-footer{margin-top:16px;display:flex;align-items:center;justify-content:space-between;}
+.match-btn{
+  padding:9px 22px;background:var(--teal);color:white;
+  border:none;border-radius:var(--rsm);font-size:13px;font-weight:700;
+  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all .15s;display:inline-flex;align-items:center;gap:7px;
+}
+.match-btn:hover{background:var(--teal2);}
+.match-hint{font-size:11.5px;color:var(--ink4);font-style:italic;}
+.compat-results-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:15px;font-weight:500;color:var(--ink2);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.compat-results-sub{font-size:11.5px;color:var(--ink4);margin-top:2px;}
+.match-card{
+  background:var(--white);border:1.5px solid var(--border2);
+  border-radius:var(--r);padding:14px 16px;
+  display:flex;align-items:center;gap:14px;
+  box-shadow:var(--sh);cursor:pointer;transition:all .17s;
+  position:relative;overflow:hidden;
+}
+.match-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  border-radius:3px 0 0 3px;transition:background .17s;
+}
+.match-card:hover{border-color:var(--teal-mid);box-shadow:var(--shmd);}
+.match-card:hover::before{background:var(--teal);}
+.mc-rank{
+  font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;
+  color:var(--ink4);min-width:28px;text-align:center;flex-shrink:0;
+}
+.mc-rank.gold{color:#b8870a;}
+.mc-rank.silver{color:#8a9aaa;}
+.mc-rank.bronze{color:#a0622a;}
+.mc-av{
+  width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;
+  font-family:'Cormorant Garamond',serif;flex-shrink:0;
+}
+.mc-body{flex:1;min-width:0;}
+.mc-name{font-size:13.5px;font-weight:600;color:var(--ink);}
+.mc-sub{font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace;margin-top:1px;margin-bottom:6px;}
+.mc-bar-wrap{height:5px;background:var(--s2);border-radius:3px;overflow:hidden;margin-bottom:5px;}
+.mc-bar{height:100%;border-radius:3px;transition:width 1s cubic-bezier(.4,0,.2,1);}
+.mc-reasons{display:flex;gap:4px;flex-wrap:wrap;}
+.mc-reason{
+  font-size:10.5px;padding:2px 8px;border-radius:100px;
+  background:var(--teal-bg);border:1px solid var(--teal-mid);color:var(--teal);
+}
+.mc-reason.neg{background:var(--rose-bg);border-color:#e8b0b0;color:var(--rose);}
+.mc-pct{
+  font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;
+  flex-shrink:0;min-width:52px;text-align:right;line-height:1;
+}
+.mc-msg{
+  display:flex;align-items:center;justify-content:center;
+  width:32px;height:32px;background:var(--teal-bg);
+  border:1px solid var(--teal-mid);border-radius:var(--rxs);
+  font-size:14px;cursor:pointer;flex-shrink:0;transition:all .14s;
+}
+.mc-msg:hover{background:var(--teal);border-color:var(--teal);}
+
+/* ─── AI COMPOSE AREA ─── */
+.ai-compose{
+  border-top:1px solid var(--border2);
+  background:var(--s1);
+  padding:12px 14px;
+  flex-shrink:0;
+}
+.ai-compose-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;
+}
+.ai-compose-label{
+  font-size:10.5px;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--ink4);
+  font-family:'DM Mono',monospace;
+  display:flex;align-items:center;gap:5px;
+}
+.ai-sparks{display:flex;gap:5px;flex-wrap:wrap;}
+.spark{
+  padding:5px 11px;border-radius:100px;
+  font-size:11.5px;
+  border:1px solid var(--teal-mid);
+  background:var(--teal-bg);color:var(--teal);
+  cursor:pointer;transition:all .13s;
+}
+.spark:hover{background:var(--teal);color:white;border-color:var(--teal);}
+.ai-regen{
+  font-size:11px;color:var(--ink4);
+  cursor:pointer;font-family:'DM Mono',monospace;
+  transition:color .13s;
+}
+.ai-regen:hover{color:var(--teal);}
+.ai-loading{
+  font-size:11.5px;color:var(--ink4);font-style:italic;
+  padding:4px 0;
+}
+
+/* Input */
+.cp-input{
+  border-top:1px solid var(--border);
+  padding:11px 13px;
+  background:var(--white);
+  flex-shrink:0;
+}
+.cp-input-row{display:flex;gap:8px;align-items:flex-end;}
+.cp-ta{
+  flex:1;
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:var(--rsm);
+  padding:9px 13px;
+  font-size:13px;color:var(--ink);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  outline:none;resize:none;
+  min-height:40px;max-height:100px;
+  line-height:1.5;
+  transition:border-color .17s,background .17s;
+}
+.cp-ta:focus{border-color:var(--teal);background:white;}
+.cp-ta::placeholder{color:var(--ink4);}
+.cp-send{
+  width:40px;height:40px;border-radius:var(--rxs);
+  background:var(--teal);border:none;color:white;
+  font-size:15px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .14s;flex-shrink:0;
+}
+.cp-send:hover{background:var(--teal2);}
+.cp-send:disabled{opacity:.35;cursor:not-allowed;}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="hdr">
+  <div class="logo">
+    <div class="logo-mark">🪺</div>
+    <div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <div class="logo-name">Nest</div>
+        <div class="logo-tag">roommate finder</div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="you-chip">
+      <div class="you-av">Y</div>
+      <span>Signed in · Unit 3C</span>
+    </div>
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()" title="Compatibility Profile">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</div>
+
+<!-- Compatibility Drawer -->
+<div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
+<div class="menu-drawer" id="menu-drawer">
+  <div class="menu-drawer-hdr">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--ink)">🧭 Compatibility Profile</div>
+    <div class="menu-close" onclick="closeMenu()">✕</div>
+  </div>
+  <div class="menu-drawer-body">
+    <p style="font-size:12px;color:var(--ink4);margin-bottom:16px;line-height:1.6">Tell us about yourself and we'll rank every tenant by how well you'd match.</p>
+    <div class="cp-setup-grid">
+      <div class="cp-field">
+        <div class="cp-field-label">Your Budget</div>
+        <select class="cp-select" id="my-budget">
+          <option value="">Any</option>
+          <option value="low">Under $800</option>
+          <option value="mid">$800–$1,200</option>
+          <option value="high">$1,200+</option>
+        </select>
+      </div>
+      <div class="cp-field">
+        <div class="cp-field-label">Sleep Schedule</div>
+        <select class="cp-select" id="my-schedule">
+          <option value="">No preference</option>
+          <option value="early bird">Early Bird 🌅</option>
+          <option value="night owl">Night Owl 🌙</option>
+        </select>
+      </div>
+      <div class="cp-field" style="grid-column:1/-1">
+        <div class="cp-field-label">Your Lifestyle Tags</div>
+        <div class="cp-tags-pick" id="my-tags">
+          <span class="cptag" data-t="quiet"      onclick="toggleMyTag(this)">🤫 Quiet</span>
+          <span class="cptag" data-t="social"     onclick="toggleMyTag(this)">🎉 Social</span>
+          <span class="cptag" data-t="clean"      onclick="toggleMyTag(this)">🧹 Clean</span>
+          <span class="cptag" data-t="remote"     onclick="toggleMyTag(this)">💻 Remote</span>
+          <span class="cptag" data-t="pets"       onclick="toggleMyTag(this)">🐾 Pets OK</span>
+          <span class="cptag" data-t="early bird" onclick="toggleMyTag(this)">🌅 Early Bird</span>
+          <span class="cptag" data-t="night owl"  onclick="toggleMyTag(this)">🌙 Night Owl</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:18px;display:flex;justify-content:flex-end">
+      <button class="match-btn" onclick="runMatch();closeMenu()">✦ Find My Matches</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main page: filters + tenant grid -->
+<div class="browse-page" id="browse-page">
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <div class="filter-bar-inner">
+
+      <div class="fb-group">
+        <div class="flabel">Rating</div>
+        <div class="sf">
+          <span class="sf-s" data-v="1" onclick="setStar(1)">★</span>
+          <span class="sf-s" data-v="2" onclick="setStar(2)">★</span>
+          <span class="sf-s" data-v="3" onclick="setStar(3)">★</span>
+          <span class="sf-s" data-v="4" onclick="setStar(4)">★</span>
+          <span class="sf-s" data-v="5" onclick="setStar(5)">★</span>
+          <span class="sf-clr" id="sf-clr" onclick="setStar(0)">✕</span>
+        </div>
+      </div>
+
+      <div class="fb-sep"></div>
+
+      <div class="fb-group">
+        <div class="flabel">Budget</div>
+        <div class="pill-row">
+          <span class="pill" data-b="low"  onclick="toggleBudget(this)">Under $800</span>
+          <span class="pill" data-b="mid"  onclick="toggleBudget(this)">$800–$1,200</span>
+          <span class="pill" data-b="high" onclick="toggleBudget(this)">$1,200+</span>
+        </div>
+      </div>
+
+      <div class="fb-sep"></div>
+
+      <div class="fb-group">
+        <div class="flabel">Lifestyle</div>
+        <div class="lchip-row">
+          <span class="lchip" data-k="quiet"      onclick="toggleKw(this)">🤫 Quiet</span>
+          <span class="lchip" data-k="pets"       onclick="toggleKw(this)">🐾 Pets OK</span>
+          <span class="lchip" data-k="social"     onclick="toggleKw(this)">🎉 Social</span>
+          <span class="lchip" data-k="remote"     onclick="toggleKw(this)">💻 Remote</span>
+          <span class="lchip" data-k="clean"      onclick="toggleKw(this)">🧹 Clean</span>
+          <span class="lchip" data-k="night owl"  onclick="toggleKw(this)">🌙 Night Owl</span>
+          <span class="lchip" data-k="early bird" onclick="toggleKw(this)">🌅 Early Bird</span>
+        </div>
+      </div>
+
+      <div style="margin-left:auto;flex-shrink:0">
+        <span class="shown-chip" id="shown">0 shown</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Tenant grid -->
+  <div class="tenant-grid" id="card-list"></div>
+
+</div>
+
+<!-- Detail / Rankings view -->
+<div class="main" id="main" style="display:none;"></div>
+
+<!-- Chat Panel -->
+<div class="chat-panel" id="chat-panel">
+  <div class="cp-hdr">
+    <div class="cp-av" id="cp-av"></div>
+    <div style="flex:1">
+      <div class="cp-nm" id="cp-nm"></div>
+      <div class="cp-sub" id="cp-sub"></div>
+    </div>
+    <div class="cp-x" onclick="closeChat()">✕</div>
+  </div>
+
+  <div class="cp-msgs" id="cp-msgs"></div>
+
+  <!-- AI Compose -->
+  <div class="ai-compose" id="ai-compose">
+    <div class="ai-compose-hdr">
+      <div class="ai-compose-label">✨ AI Suggestions</div>
+      <span class="ai-regen" onclick="genSuggestions()">↻ refresh</span>
+    </div>
+    <div class="ai-sparks" id="ai-sparks">
+      <span class="ai-loading">Generating suggestions…</span>
+    </div>
+  </div>
+
+  <div class="cp-input">
+    <div class="cp-input-row">
+      <textarea class="cp-ta" id="cp-ta" placeholder="Write a message, or pick an AI suggestion above…"
+        rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="cp-send" id="cp-send" onclick="sendMsg()">➤</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const tenants = [
+  // ── 5-star ──
+  {
+    id:1, name:"Aisha Okonkwo", unit:"1A", stars:5,
+    budget:"mid",
+    bio:"Grad student in environmental science. I cook a lot, keep a very tidy space, and work from home a few days a week. I appreciate quiet evenings but love chatting over dinner.",
+    tags:["quiet","clean","remote"],
+    review:"Aisha is an outstanding tenant. Consistently respectful of shared spaces, communicates proactively, and is beloved by neighbors. Zero complaints on record.",
+    av:"AO", avbg:"#d6eeea", avfg:"#1a5e52"
+  },
+  {
+    id:2, name:"Priya Mehta", unit:"4B", stars:5,
+    budget:"high",
+    bio:"Software engineer at a health-tech startup. Super clean and rarely home on weekdays. I prefer a calm apartment — no big parties, just the occasional dinner with friends. Happy to share cooking duties.",
+    tags:["quiet","clean","remote","early bird"],
+    review:"Priya is exemplary — perfect payment history, immaculate unit, praised by multiple neighbors as a genuinely positive presence in the building.",
+    av:"PM", avbg:"#ece2f5", avfg:"#4a1e6e"
+  },
+  {
+    id:3, name:"Simone Laurent", unit:"5A", stars:5,
+    budget:"high",
+    bio:"Interior designer. My space is always magazine-ready. Early riser, prefer a peaceful home. Not a party person but enjoy a glass of wine and good conversation.",
+    tags:["quiet","clean","early bird"],
+    review:"Simone holds the highest standards in the building. Immaculate unit, zero incidents, and consistently praised by neighbors. Highly recommended.",
+    av:"SL", avbg:"#f5f0e0", avfg:"#6a4e10"
+  },
+  {
+    id:4, name:"Marcus Webb", unit:"6C", stars:5,
+    budget:"mid",
+    bio:"Physical therapist with regular hours. I'm tidy, respectful of shared spaces, and enjoy cooking on weekends. I have a small dog named Oat who is very well-behaved.",
+    tags:["clean","early bird","pets"],
+    review:"Marcus is one of the most considerate tenants in the building. Always communicates ahead of time, maintains a spotless unit, and his dog has never caused issues.",
+    av:"MW", avbg:"#dce8f5", avfg:"#1e3a5e"
+  },
+  {
+    id:5, name:"Yuki Tanaka", unit:"7A", stars:5,
+    budget:"low",
+    bio:"PhD candidate in linguistics. Very studious and keep odd-but-quiet hours. I bake stress-bread when deadlines loom — you'll benefit from this. Non-smoker, no pets.",
+    tags:["quiet","clean","remote"],
+    review:"Yuki is a joy. Impeccably clean, never a noise complaint, and brought homemade cookies to the building holiday party. Perfect tenant.",
+    av:"YT", avbg:"#f0f0e0", avfg:"#4a4a10"
+  },
+  // ── 4-star ──
+  {
+    id:6, name:"Damon Reyes", unit:"2D", stars:4,
+    budget:"low",
+    bio:"Freelance graphic designer and night owl. I keep to myself during the week but love having friends over on weekends. I have a small hypoallergenic cat named Biscuit.",
+    tags:["social","night owl","pets"],
+    review:"Damon is friendly and pays rent on time. One early noise incident that was quickly resolved. Good standing overall — communicates well.",
+    av:"DR", avbg:"#faeee0", avfg:"#7a3e10"
+  },
+  {
+    id:7, name:"Theo Nakamura", unit:"3B", stars:4,
+    budget:"low",
+    bio:"High school teacher. Up at 6am, asleep by 10pm. I love cooking simple meals, reading on weekends, and keeping a very clean home. Very low-key.",
+    tags:["quiet","clean","early bird"],
+    review:"Theo is a model tenant — quiet, courteous, and responsible. Neighbors appreciate his consideration. Highly recommended.",
+    av:"TN", avbg:"#dceee0", avfg:"#2a5230"
+  },
+  {
+    id:8, name:"Layla Hassan", unit:"2A", stars:4,
+    budget:"mid",
+    bio:"Registered nurse on a rotating shift schedule, so my hours can vary. I'm very clean and considerate — I know how much rest matters. Social on days off, quiet when I'm recovering.",
+    tags:["clean","social","night owl"],
+    review:"Layla is reliable and communicative about her schedule. One minor late payment quickly resolved. Neighbors find her warm and helpful.",
+    av:"LH", avbg:"#fce8e8", avfg:"#7a1e1e"
+  },
+  {
+    id:9, name:"Ben Okafor", unit:"8B", stars:4,
+    budget:"high",
+    bio:"Startup founder — work hard, play hard. I travel about 30% of the time so the apartment gets lots of quiet. When I'm home I like to host the occasional dinner party.",
+    tags:["social","clean","remote"],
+    review:"Ben is a great tenant overall. Two noise complaints from dinner parties but both resolved promptly. Always pays on time. Could communicate more proactively.",
+    av:"BO", avbg:"#e0ece0", avfg:"#1e5a1e"
+  },
+  {
+    id:10, name:"Clara Osei", unit:"1D", stars:4,
+    budget:"mid",
+    bio:"Illustrator working from home. My desk is my whole life — I keep quiet hours and love a clean, calm environment. I have a tortoiseshell cat named Fig.",
+    tags:["quiet","clean","remote","pets"],
+    review:"Clara is thoughtful and tidy. Her cat Fig has never been an issue. One instance of an overdue rent notice but paid within the week. Strong tenant overall.",
+    av:"CO", avbg:"#e8d8f0", avfg:"#4a1a6a"
+  },
+  // ── 3-star ──
+  {
+    id:11, name:"Jordan Blake", unit:"2B", stars:3,
+    budget:"mid",
+    bio:"Music producer and part-time barista. I work late but always use headphones. Social person looking for someone chill and open-minded. Have two cats.",
+    tags:["social","night owl","pets"],
+    review:"Jordan pays rent reliably but has received two noise complaints requiring follow-up. Situation is improving; potential roommates should be aware of the social lifestyle.",
+    av:"JB", avbg:"#d8e2f5", avfg:"#1e346e"
+  },
+  {
+    id:12, name:"Nina Park", unit:"3D", stars:3,
+    budget:"low",
+    bio:"Yoga instructor and aspiring chef. I'm up early for morning classes and love to experiment in the kitchen — the smells are always good, I promise. Looking for a relaxed household.",
+    tags:["early bird","social","clean"],
+    review:"Nina is generally positive but has had issues with prolonged kitchen use and occasionally leaves shared areas untidy. Two reminders issued. Responsive when contacted.",
+    av:"NP", avbg:"#f5ece0", avfg:"#6a3a10"
+  },
+  {
+    id:13, name:"Eli Torres", unit:"5C", stars:3,
+    budget:"mid",
+    bio:"Electrician. Work starts at 7am so I'm usually home by 4pm. I like to unwind with gaming or watching sports. Pretty easygoing, looking for someone who won't stress about small things.",
+    tags:["social","night owl"],
+    review:"Eli is friendly but has missed two rent payments, both collected within the grace period. Minor cleanliness notes from building inspection. On a watch list.",
+    av:"ET", avbg:"#e0e8f0", avfg:"#2a3e5a"
+  },
+  {
+    id:14, name:"Rachel Gupta", unit:"6A", stars:3,
+    budget:"high",
+    bio:"Lawyer at a downtown firm — long hours, rarely home before 9pm. I decompress with loud music on Friday nights. Would prefer a roommate who is similarly independent.",
+    tags:["night owl","social"],
+    review:"Rachel is financially reliable but has generated three noise complaints from Friday gatherings. Building management has spoken with her twice. Improvement has been modest.",
+    av:"RG", avbg:"#eee0e8", avfg:"#5a1a4a"
+  },
+  // ── 2-star ──
+  {
+    id:15, name:"Tyler Marsh", unit:"4A", stars:2,
+    budget:"low",
+    bio:"Between jobs at the moment. Flexible schedule. I'm honest — I like to have people over and I'm not the tidiest person alive, but I pay rent and I'm a good hang.",
+    tags:["social","night owl","pets"],
+    review:"Tyler has been issued two formal warnings for noise and one for unit condition. Rent payments are inconsistent. Peer reviews are mixed. Improvement plan in place.",
+    av:"TM", avbg:"#f5e8e0", avfg:"#7a3010"
+  },
+  {
+    id:16, name:"Jade Okonkwo", unit:"3C", stars:2,
+    budget:"mid",
+    bio:"Nursing student — stressed, honest, trying my best. I keep unusual hours during exam season and sometimes let cleaning slide. Looking for a patient roommate.",
+    tags:["night owl","remote"],
+    review:"Jade has struggled with cleanliness standards and two late rent payments. Building management is aware. She communicates openly about difficulties, which is appreciated.",
+    av:"JO", avbg:"#e4eee4", avfg:"#245424"
+  },
+  {
+    id:17, name:"Sam Diallo", unit:"7C", stars:2,
+    budget:"low",
+    bio:"Musician gigging around the city most evenings. I'm barely home but when I am, I need to practice. Have talked to management about this — working on a solution.",
+    tags:["night owl","social"],
+    review:"Sam has accumulated four noise complaints related to late-night instrument practice. Repeated conversations with management. Rent is current but situation is ongoing.",
+    av:"SD", avbg:"#e8e4f5", avfg:"#3a2870"
+  },
+  // ── 1-star ──
+  {
+    id:18, name:"Derek Voss", unit:"1B", stars:1,
+    budget:"low",
+    bio:"Just looking for somewhere affordable. I work nights, sleep days. Not interested in rules or drama.",
+    tags:["night owl"],
+    review:"Derek has three outstanding complaints — noise, unit damage, and unauthorized subletting. Two formal warnings and HR involvement. Lease renewal under serious review.",
+    av:"DV", avbg:"#f5e0e0", avfg:"#7a1010"
+  },
+  {
+    id:19, name:"Brianna Cole", unit:"9A", stars:1,
+    budget:"mid",
+    bio:"I work from home and like having my space. I have three dogs. Looking for someone who doesn't bother me much.",
+    tags:["remote","pets"],
+    review:"Brianna has a documented history of unauthorized pets beyond policy limits, damage to shared carpet, and four late rent payments. Currently under a formal lease review.",
+    av:"BC", avbg:"#f0ece0", avfg:"#6a4a10"
+  },
+  {
+    id:20, name:"Kyle Drummond", unit:"2C", stars:1,
+    budget:"low",
+    bio:"Just moved to the city. Looking for a low-cost setup. I keep to myself mostly.",
+    tags:["night owl"],
+    review:"Kyle has the most complaints on file this year — noise, hallway altercations, and two missed rent payments. Neighbors have formally requested intervention. On final notice.",
+    av:"KD", avbg:"#ece0ec", avfg:"#5a105a"
+  }
+];
+
+// ─── NAVIGATION ──────────────────────────────────────────────────────────────
+function openFromRankings(id) {
+  cameFromRankings = true;
+  openProfile(id);
+}
+
+function backToBrowse() {
+  selectedId = null;
+  renderList();
+  document.getElementById('browse-page').style.display = 'flex';
+  document.getElementById('main').style.display = 'none';
+}
+
+function goBack() {
+  selectedId = null;
+  renderList();
+  if (cameFromRankings) {
+    showCompatPanel();
+  } else {
+    document.getElementById('browse-page').style.display = 'flex';
+    document.getElementById('main').style.display = 'none';
+  }
+}
+
+// ─── MENU ────────────────────────────────────────────────────────────────────
+function toggleMenu() {
+  const drawer = document.getElementById('menu-drawer');
+  const overlay = document.getElementById('menu-overlay');
+  const open = drawer.classList.contains('open');
+  drawer.classList.toggle('open', !open);
+  overlay.classList.toggle('open', !open);
+}
+
+function closeMenu() {
+  document.getElementById('menu-drawer').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let starMin = 0;
+let budgetSel = null;
+let kwSel = new Set();
+let selectedId = null;
+let chatId = null;
+let chatHistories = {};   // id → [{role, text, time}]
+
+// my profile for compatibility
+let myTags = new Set();
+
+// ─── MY TAG TOGGLE ────────────────────────────────────────────────────────────
+function toggleMyTag(el) {
+  const t = el.dataset.t;
+  myTags.has(t) ? (myTags.delete(t), el.classList.remove('on'))
+                : (myTags.add(t),    el.classList.add('on'));
+}
+
+// ─── COMPATIBILITY SCORING ────────────────────────────────────────────────────
+function scoreMatch(tenant) {
+  const budgetEls = document.querySelectorAll('#my-budget');
+  const schedEls  = document.querySelectorAll('#my-schedule');
+  const myBudget  = [...budgetEls].find(e => e.value)?.value || budgetEls[0]?.value || '';
+  const mySched   = [...schedEls].find(e => e.value)?.value  || schedEls[0]?.value  || '';
+  let score = 0;
+  const reasons = [];
+
+  // 1. Star rating weight (0–30 pts)
+  const starPts = (tenant.stars / 5) * 30;
+  score += starPts;
+  if (tenant.stars >= 4) reasons.push({ text: tenant.stars + '★ rating', pos: true });
+  else if (tenant.stars <= 2) reasons.push({ text: tenant.stars + '★ rating', pos: false });
+
+  // 2. Budget match (0–25 pts)
+  if (myBudget && tenant.budget === myBudget) {
+    score += 25;
+    reasons.push({ text: 'Budget match', pos: true });
+  } else if (myBudget && tenant.budget !== myBudget) {
+    score -= 10;
+    reasons.push({ text: 'Budget mismatch', pos: false });
+  } else {
+    score += 12; // neutral
+  }
+
+  // 3. Lifestyle tag overlap (0–30 pts)
+  const myTagArr = [...myTags];
+  if (myTagArr.length > 0) {
+    const shared = myTagArr.filter(t => tenant.tags.includes(t));
+    const conflict = myTagArr.filter(t => {
+      if (t === 'quiet' && tenant.tags.includes('social')) return true;
+      if (t === 'social' && tenant.tags.includes('quiet')) return true;
+      if (t === 'early bird' && tenant.tags.includes('night owl')) return true;
+      if (t === 'night owl' && tenant.tags.includes('early bird')) return true;
+      return false;
+    });
+    const tagPts = (shared.length / myTagArr.length) * 30;
+    score += tagPts;
+    if (shared.length > 0) reasons.push({ text: shared.slice(0,2).join(', '), pos: true });
+    if (conflict.length > 0) reasons.push({ text: conflict[0] + ' clash', pos: false });
+  } else {
+    score += 15; // neutral if no tags set
+  }
+
+  // 4. Sleep schedule (0–15 pts)
+  if (mySched) {
+    if (tenant.tags.includes(mySched)) {
+      score += 15;
+      reasons.push({ text: 'Same schedule', pos: true });
+    } else {
+      const opposite = mySched === 'early bird' ? 'night owl' : 'early bird';
+      if (tenant.tags.includes(opposite)) {
+        score -= 10;
+        reasons.push({ text: 'Schedule clash', pos: false });
+      }
+    }
+  } else {
+    score += 7; // neutral
+  }
+
+  return { pct: Math.min(100, Math.max(0, Math.round(score))), reasons };
+}
+
+// ─── RUN MATCH ────────────────────────────────────────────────────────────────
+function showCompatPanel() {
+  selectedId = null;
+  renderList();
+  document.getElementById('browse-page').style.display = 'none';
+  const main = document.getElementById('main');
+  main.style.display = 'flex';
+  main.innerHTML =
+    '<div class="back-nav">' +
+      '<button class="back-nav-btn" onclick="backToBrowse()"><span class="arrow">&#8592;</span> Back to Browse</button>' +
+    '</div>' +
+    '<div class="compat-filter-bar">' +
+    '<div class="compat-filter-inner">' +
+      '<div class="cfb-group">' +
+        '<div class="cp-field-label">Budget</div>' +
+        '<select class="cp-select" id="my-budget">' +
+          '<option value="">Any budget</option>' +
+          '<option value="low">Under $800</option>' +
+          '<option value="mid">$800-$1,200</option>' +
+          '<option value="high">$1,200+</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="cfb-sep"></div>' +
+      '<div class="cfb-group">' +
+        '<div class="cp-field-label">Sleep Schedule</div>' +
+        '<select class="cp-select" id="my-schedule">' +
+          '<option value="">No preference</option>' +
+          '<option value="early bird">Early Bird</option>' +
+          '<option value="night owl">Night Owl</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="cfb-sep"></div>' +
+      '<div class="cfb-group cfb-tags">' +
+        '<div class="cp-field-label">Lifestyle Tags</div>' +
+        '<div class="cp-tags-pick" id="my-tags-inline"></div>' +
+      '</div>' +
+      '<button class="match-btn" style="margin-left:auto;flex-shrink:0" onclick="runMatch()">Run</button>' +
+    '</div>' +
+  '</div>' +
+    '<div class="compat-panel" id="compat-panel">' +
+      '<div id="match-results"></div>' +
+    '</div>';
+  syncInlineFilters();
+  if (lastMatchHTML) {
+    document.getElementById('match-results').innerHTML = lastMatchHTML;
+  }
+}
+
+function syncInlineFilters() {
+  // Restore select values from current state
+  const budgetEl = document.getElementById('my-budget');
+  const schedEl  = document.getElementById('my-schedule');
+  if (budgetEl) budgetEl.value = document.querySelector('#menu-drawer #my-budget')?.value || '';
+  if (schedEl)  schedEl.value  = document.querySelector('#menu-drawer #my-schedule')?.value || '';
+
+  // Rebuild lifestyle tag chips in the inline bar, preserving myTags state
+  const container = document.getElementById('my-tags-inline');
+  if (!container) return;
+  const allTags = [
+    {k:'quiet',    label:'🤫 Quiet'},
+    {k:'social',   label:'🎉 Social'},
+    {k:'clean',    label:'🧹 Clean'},
+    {k:'remote',   label:'💻 Remote'},
+    {k:'pets',     label:'🐾 Pets OK'},
+    {k:'early bird', label:'🌅 Early Bird'},
+    {k:'night owl',  label:'🌙 Night Owl'},
+  ];
+  container.innerHTML = allTags.map(({k, label}) =>
+    '<span class="cptag' + (myTags.has(k) ? ' on' : '') + '" ' +
+    'data-t="' + k + '" onclick="toggleMyTagInline(this)">' + label + '</span>'
+  ).join('');
+}
+
+function toggleMyTagInline(el) {
+  const t = el.dataset.t;
+  myTags.has(t) ? (myTags.delete(t), el.classList.remove('on'))
+                : (myTags.add(t),    el.classList.add('on'));
+  // Keep drawer tags in sync too
+  const drawerTag = document.querySelector('#my-tags .cptag[data-t="' + t + '"]');
+  if (drawerTag) drawerTag.classList.toggle('on', myTags.has(t));
+}
+
+function getInlineFilterValues() {
+  // Read from inline bar if present, else from drawer
+  const budgetEl = document.getElementById('my-budget');
+  const schedEl  = document.getElementById('my-schedule');
+  if (budgetEl) {
+    // Sync back to drawer selects so scoreMatch reads correctly
+    const drawerBudget = document.querySelector('#menu-drawer select#my-budget') ||
+                         document.querySelector('select#my-budget');
+    const drawerSched  = document.querySelector('#menu-drawer select#my-schedule') ||
+                         document.querySelector('select#my-schedule');
+  }
+}
+
+function runMatch() {
+  const results = tenants
+    .map(t => ({ ...t, ...scoreMatch(t) }))
+    .sort((a, b) => b.pct - a.pct);
+
+  // Build the rankings view into #main
+  document.getElementById('browse-page').style.display = 'none';
+  const main = document.getElementById('main');
+  main.style.display = 'flex';
+  main.innerHTML =
+    '<div class="back-nav">' +
+      '<button class="back-nav-btn" onclick="backToBrowse()"><span class="arrow">&#8592;</span> Back to Browse</button>' +
+    '</div>' +
+    '<div class="compat-filter-bar">' +
+    '<div class="compat-filter-inner">' +
+      '<div class="cfb-group">' +
+        '<div class="cp-field-label">Budget</div>' +
+        '<select class="cp-select" id="my-budget">' +
+          '<option value="">Any budget</option>' +
+          '<option value="low">Under $800</option>' +
+          '<option value="mid">$800-$1,200</option>' +
+          '<option value="high">$1,200+</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="cfb-sep"></div>' +
+      '<div class="cfb-group">' +
+        '<div class="cp-field-label">Sleep Schedule</div>' +
+        '<select class="cp-select" id="my-schedule">' +
+          '<option value="">No preference</option>' +
+          '<option value="early bird">Early Bird</option>' +
+          '<option value="night owl">Night Owl</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="cfb-sep"></div>' +
+      '<div class="cfb-group cfb-tags">' +
+        '<div class="cp-field-label">Lifestyle Tags</div>' +
+        '<div class="cp-tags-pick" id="my-tags-inline"></div>' +
+      '</div>' +
+      '<button class="match-btn" style="margin-left:auto;flex-shrink:0" onclick="runMatch()">Run</button>' +
+    '</div>' +
+  '</div>' +
+    '<div class="compat-panel" id="compat-panel">' +
+      '<div id="match-results"></div>' +
+    '</div>';
+  syncInlineFilters();
+  const container = document.getElementById('match-results');
+
+  function barColor(pct) {
+    if (pct >= 75) return '#287066';
+    if (pct >= 50) return '#b8731a';
+    return '#a83838';
+  }
+
+  function rankLabel(i) {
+    if (i === 0) return '<span class="mc-rank gold">①</span>';
+    if (i === 1) return '<span class="mc-rank silver">②</span>';
+    if (i === 2) return '<span class="mc-rank bronze">③</span>';
+    return `<span class="mc-rank">${i+1}</span>`;
+  }
+
+  container.innerHTML = `
+    <div>
+      <div class="compat-results-title">
+        Compatibility Rankings
+        <span style="font-size:11px;color:var(--ink4);font-family:'DM Mono',monospace">${results.length} tenants ranked</span>
+      </div>
+      <div class="compat-results-sub">Ranked by how well each tenant matches your profile.</div>
+    </div>
+    ${results.map((t, i) => `
+      <div class="match-card" onclick="openFromRankings(${t.id})">
+        ${rankLabel(i)}
+        <div class="mc-av" style="background:${t.avbg};color:${t.avfg}">${t.av}</div>
+        <div class="mc-body">
+          <div class="mc-name">${t.name}</div>
+          <div class="mc-sub">Unit ${t.unit} · ${'★'.repeat(t.stars)}${'☆'.repeat(5-t.stars)}</div>
+          <div class="mc-bar-wrap">
+            <div class="mc-bar" style="width:${t.pct}%;background:${barColor(t.pct)}"></div>
+          </div>
+          <div class="mc-reasons">
+            ${t.reasons.slice(0,3).map(r =>
+              `<span class="mc-reason${r.pos?'':' neg'}">${r.text}</span>`
+            ).join('')}
+          </div>
+        </div>
+        <div class="mc-pct" style="color:${barColor(t.pct)}">${t.pct}%</div>
+        <div class="mc-msg" onclick="event.stopPropagation();openChat(${t.id})" title="Message ${t.name.split(' ')[0]}">💬</div>
+      </div>
+    `).join('')}
+  `;
+
+  lastMatchHTML = container.innerHTML;
+
+  // Animate bars after paint
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.mc-bar').forEach(b => {
+      const w = b.style.width;
+      b.style.width = '0';
+      requestAnimationFrame(() => { b.style.width = w; });
+    });
+  });
+}
+
+// ─── RENDER LIST ─────────────────────────────────────────────────────────────
+function renderList() {
+  const vis = tenants
+    .filter(t => {
+      if (starMin && t.stars !== starMin) return false;  // exact star match
+      if (budgetSel && t.budget !== budgetSel) return false;
+      if (kwSel.size) {
+        const match = [...kwSel].some(k =>
+          t.tags.includes(k) || t.bio.toLowerCase().includes(k)
+        );
+        if (!match) return false;
+      }
+      return true;
+    })
+    .sort((a, b) => b.stars - a.stars);  // descending by star rating
+
+  document.getElementById('shown').textContent = `${vis.length} shown`;
+  const list = document.getElementById('card-list');
+
+  if (!vis.length) {
+    list.innerHTML = `<div class="no-res">No tenants match your filters.<br>Try loosening the criteria above.</div>`;
+    return;
+  }
+
+  list.innerHTML = vis.map(t => {
+    const shortBio = t.bio.length > 130 ? t.bio.slice(0, 130) + '\u2026' : t.bio;
+    const starsHtml = [1,2,3,4,5].map(i =>
+      '<span class="rcs' + (i <= t.stars ? ' on' : '') + '">\u2605</span>'
+    ).join('');
+    return '<div class="rcard' + (selectedId === t.id ? ' sel' : '') + '">' +
+      '<div class="rc-top">' +
+        '<div class="rc-av" style="background:' + t.avbg + ';color:' + t.avfg + '">' + t.av + '</div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div class="rc-name" onclick="openProfile(' + t.id + ')">' + t.name + '</div>' +
+          '<div class="rc-stars" style="margin-top:4px">' + starsHtml + '</div>' +
+        '</div>' +
+        '<button class="msg-btn" onclick="openChat(' + t.id + ')" style="flex-shrink:0;align-self:center">\uD83D\uDCAC Message</button>' +
+      '</div>' +
+      '<div class="rc-bio" style="margin-top:12px">' + shortBio + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function sendMsg() {
+  const ta = document.getElementById('cp-ta');
+  const text = ta.value.trim();
+  if (!text || !chatId) return;
+
+  const id = chatId;
+  ta.value = ''; autoResize(ta);
+  document.getElementById('cp-send').disabled = true;
+
+  chatHistories[id].push({role:'me', text, time: tstamp()});
+  renderMsgs(id);
+
+  // Typing indicator
+  const msgs = document.getElementById('cp-msgs');
+  const ti = document.createElement('div');
+  ti.className = 'cm them'; ti.id = 'ti';
+  ti.innerHTML = `<div class="typing-bub"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(ti);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const t = tenants.find(x=>x.id===id);
+  const delay = 1200 + Math.random()*1000;
+  await sleep(delay);
+  document.getElementById('ti')?.remove();
+
+  // AI reply as the tenant
+  try {
+    const reply = await callAPI(
+      `You are ${t.name}, a tenant in an apartment building.
+Bio: "${t.bio}"
+Your rating is ${t.stars}/5 stars. Your lifestyle: ${t.tags.join(', ')}.
+Reply naturally to a potential roommate reaching out to you.
+Keep it warm, genuine, and brief (2–3 sentences). Never break character.`,
+      [{role:'user', content: text}]
+    );
+    chatHistories[id].push({role:'them', text: reply, time: tstamp()});
+  } catch {
+    const fb = [
+      `Hey! Thanks for reaching out — I'd love to chat more about the living situation.`,
+      `Hi there! Sounds like we might be a good match. What's your lifestyle like?`,
+      `Thanks for the message! Feel free to ask me anything about my habits or the unit.`
+    ];
+    chatHistories[id].push({role:'them', text: fb[Math.floor(Math.random()*fb.length)], time: tstamp()});
+  }
+
+  if (chatId === id) renderMsgs(id);
+  document.getElementById('cp-send').disabled = false;
+}
+
+// ─── AI SUGGESTIONS ──────────────────────────────────────────────────────────
+async function genSuggestions() {
+  if (!chatId) return;
+  const t = tenants.find(x=>x.id===chatId);
+  const sparks = document.getElementById('ai-sparks');
+  sparks.innerHTML = `<span class="ai-loading">Generating…</span>`;
+
+  const history = chatHistories[chatId] || [];
+  const lastFew = history.slice(-4).filter(m=>m.role!=='sys')
+    .map(m=>`${m.role==='me'?'Me':t.name.split(' ')[0]}: ${m.text}`).join('\n');
+
+  const prompt = lastFew
+    ? `We've been chatting:\n${lastFew}\n\nSuggest 3 short, natural follow-up messages I (the one reaching out) could send next.`
+    : `I want to message ${t.name.split(' ')[0]} about potentially being roommates. Their bio: "${t.bio}". Lifestyle: ${t.tags.join(', ')}. Suggest 3 short, friendly opening messages I could send.`;
+
+  try {
+    const res = await callAPI(
+      'You generate short, natural roommate message suggestions. Return ONLY a JSON array of 3 strings (under 18 words each). No markdown, no explanation.',
+      [{role:'user', content: prompt}]
+    );
+    const clean = res.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    sparks.innerHTML = parsed.map(s =>
+      `<span class="spark" onclick="useSpark(this)">${s}</span>`
+    ).join('');
+  } catch {
+    const defaults = [
+      `Hey ${t.name.split(' ')[0]}! Your profile looks great — would love to connect.`,
+      `Hi! We seem to have a similar lifestyle. Open to chatting more?`,
+      `Hey, I think we could be a great match as roommates — interested?`
+    ];
+    sparks.innerHTML = defaults.map(s =>
+      `<span class="spark" onclick="useSpark(this)">${s}</span>`
+    ).join('');
+  }
+}
+
+function useSpark(el) {
+  const ta = document.getElementById('cp-ta');
+  ta.value = el.textContent;
+  ta.focus();
+  autoResize(ta);
+}
+
+// ─── FILTERS ─────────────────────────────────────────────────────────────────
+function setStar(n) {
+  starMin = (starMin === n) ? 0 : n;  // clicking same star again clears it
+  document.querySelectorAll('.sf-s').forEach(s => {
+    s.classList.toggle('on', parseInt(s.dataset.v) <= starMin);  // fill 1 through N
+  });
+  const clr = document.getElementById('sf-clr');
+  clr.style.display = starMin > 0 ? 'inline' : 'none';
+  clr.textContent = starMin > 0 ? `✕ showing ${starMin}★` : '';
+  renderList();
+}
+
+function toggleBudget(el) {
+  const v = el.dataset.b;
+  if (budgetSel === v) { budgetSel = null; el.classList.remove('on'); }
+  else {
+    document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+    budgetSel = v; el.classList.add('on');
+  }
+  renderList();
+}
+
+function toggleKw(el) {
+  const k = el.dataset.k;
+  kwSel.has(k) ? (kwSel.delete(k), el.classList.remove('on'))
+               : (kwSel.add(k),    el.classList.add('on'));
+  renderList();
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+async function callAPI(system, messages) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:400,
+      system,
+      messages
+    })
+  });
+  if (!r.ok) throw new Error(`API ${r.status}`);
+  const d = await r.json();
+  return d.content[0].text;
+}
+
+function tstamp() { return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();} }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+document.getElementById('browse-page').style.display = 'flex';
+document.getElementById('main').style.display = 'none';
+renderList();
+</script>
+</body>
+</html>
