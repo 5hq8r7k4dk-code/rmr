@@ -3,92 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nest — Find Your Roommate</title>
+<title>Chat — RateMyRoommate</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles/style.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap');
 
 :root {
-  --bg:        #f8f6f2;
-  --white:     #ffffff;
-  --s1:        #f2ede6;
-  --s2:        #ece5db;
-  --s3:        #e2d9cc;
-  --border:    #ddd6cb;
-  --border2:   #ede8e0;
-  --ink:       #1a1815;
-  --ink2:      #38342e;
-  --ink3:      #6b6358;
-  --ink4:      #a89f95;
-  --teal:      #287066;
-  --teal2:     #1f5c54;
-  --teal-bg:   #e4f0ee;
-  --teal-mid:  #b0d5cf;
-  --amber:     #b8731a;
-  --amber-bg:  #faeee0;
-  --amber-mid: #e8c490;
-  --rose:      #a83838;
-  --rose-bg:   #f5e4e4;
+  /* Page-specific dark theme variables */
+  --white:     #13131a;
+  --s1:        #1a1a24;
+  --s2:        #1e1e2c;
+  --s3:        #222230;
+  --border2:   rgba(255,255,255,0.05);
+  --ink:       #f0ede8;
+  --ink2:      #d8d5d0;
+  --ink3:      #9a9590;
+  --ink4:      #7a7670;
+  /* Teal → Gold */
+  --teal:      #c8a96e;
+  --teal2:     #b8963e;
+  --teal-bg:   rgba(200,169,110,0.12);
+  --teal-mid:  rgba(200,169,110,0.35);
+  /* Amber (budget) */
+  --amber:     #c8891a;
+  --amber-bg:  rgba(184,115,26,0.12);
+  --amber-mid: rgba(184,115,26,0.35);
+  /* Rose (negative) */
+  --rose:      #c85050;
+  --rose-bg:   rgba(168,56,56,0.12);
+  /* Stars */
   --gold:      #c49a1a;
+  /* Sizing */
   --r:         14px;
   --rsm:       9px;
   --rxs:       6px;
-  --sh:        0 1px 6px rgba(26,24,21,.07);
-  --shmd:      0 4px 18px rgba(26,24,21,.10);
-  --shlg:      0 14px 50px rgba(26,24,21,.14);
+  /* Shadows */
+  --sh:        0 1px 6px rgba(0,0,0,0.3);
+  --shmd:      0 4px 18px rgba(0,0,0,0.4);
+  --shlg:      0 14px 50px rgba(0,0,0,0.5);
 }
 
-*{margin:0;padding:0;box-sizing:border-box;}
+body { align-items: stretch; }
 
-body{
-  font-family:'Plus Jakarta Sans',sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-/* ─── HEADER ─── */
-.hdr{
-  height:56px;
-  background:var(--ink);
-  display:flex;
-  align-items:center;
-  padding:0 22px;
-  justify-content:space-between;
-  flex-shrink:0;
-  position:relative;
-  z-index:20;
-}
-.hdr::after{
-  content:'';
-  position:absolute;
-  bottom:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--teal),#6abaaf,var(--teal));
-}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo-mark{
-  width:32px;height:32px;
-  border-radius:9px;
-  background:linear-gradient(135deg,var(--teal),#4aada0);
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;
-}
-.logo-name{
-  font-family:'Cormorant Garamond',serif;
-  font-size:24px;
-  font-weight:500;
-  color:#f5f2ec;
-  letter-spacing:-0.3px;
-}
-.logo-tag{
-  font-size:10.5px;
-  color:rgba(255,255,255,.38);
-  font-family:'DM Mono',monospace;
-  letter-spacing:.06em;
-  margin-left:4px;
-  margin-top:1px;
-}
+/* ─── YOU-CHIP & HAMBURGER ─── */
 .you-chip{
   display:flex;align-items:center;gap:8px;
   padding:5px 13px;
@@ -100,13 +57,11 @@ body{
 }
 .you-av{
   width:22px;height:22px;border-radius:50%;
-  background:var(--teal);
-  color:white;
+  background:var(--accent);
+  color:#0d0d0f;
   display:flex;align-items:center;justify-content:center;
   font-size:10px;font-weight:700;
 }
-
-/* ─── HAMBURGER ─── */
 .hamburger{
   width:36px;height:36px;
   background:rgba(255,255,255,.1);
@@ -124,7 +79,7 @@ body{
 /* ─── DRAWER ─── */
 .menu-overlay{
   position:fixed;inset:0;
-  background:rgba(26,24,21,.45);
+  background:rgba(0,0,0,.6);
   z-index:100;
   opacity:0;pointer-events:none;
   transition:opacity .25s;
@@ -161,6 +116,7 @@ body{
 /* ─── BROWSE PAGE ─── */
 .browse-page{
   flex:1;display:flex;flex-direction:column;
+  width:100%;position:relative;z-index:1;
 }
 .filter-bar{
   background:var(--white);
@@ -184,7 +140,8 @@ body{
   gap:16px;
 }
 .main{
-  flex:1;display:flex;flex-direction:column;
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+  position:relative;width:100%;z-index:1;
 }
 .shown-chip{
   font-size:10.5px;
@@ -196,15 +153,27 @@ body{
 }
 
 /* Star filter */
-.sf{display:flex;gap:3px;align-items:center;}
-.sf-s{
-  font-size:24px;cursor:pointer;
-  color:var(--gold);opacity:.2;
-  transition:all .12s;user-select:none;
-  line-height:1;
+.sf{display:flex;gap:2px;align-items:center;}
+.sf-slot{
+  position:relative;display:inline-block;
+  width:24px;height:26px;cursor:pointer;
 }
-.sf-s.on{opacity:1;}
-.sf-s:hover{transform:scale(1.15);}
+.sf-bg{
+  font-size:24px;color:rgba(255,255,255,0.15);
+  line-height:1;display:block;user-select:none;
+}
+.sf-fg{
+  position:absolute;left:0;top:0;
+  font-size:24px;color:var(--gold);
+  line-height:1;overflow:hidden;
+  width:0%;white-space:nowrap;
+  display:block;pointer-events:none;
+}
+.sf-half{
+  position:absolute;top:0;height:100%;width:50%;z-index:1;
+}
+.sf-half.left{left:0;}
+.sf-half.right{right:0;}
 .sf-clr{
   font-size:11px;color:var(--ink4);
   cursor:pointer;margin-left:6px;
@@ -258,7 +227,7 @@ body{
 /* Card list */
 .card-list{flex:1;overflow-y:auto;padding:4px 10px 14px;}
 .card-list::-webkit-scrollbar{width:3px;}
-.card-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.card-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px;}
 
 .rcard{
   background:var(--white);
@@ -274,21 +243,20 @@ body{
   max-width:680px;
 }
 .rcard:hover{border-color:var(--teal-mid);box-shadow:var(--shmd);}
-.rcard.sel{background:#f2faf9;border-color:var(--teal);}
-
+.rcard.sel{background:rgba(200,169,110,0.06);border-color:var(--teal);}
 
 .rc-top{display:flex;gap:14px;align-items:center;}
 .rc-av{
   width:62px;height:62px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:22px;font-weight:700;
-  font-family:'Cormorant Garamond',serif;
+  font-family:'DM Serif Display',serif;
   flex-shrink:0;
 }
 .rc-name{
   font-size:20px;font-weight:600;line-height:1.2;color:var(--ink);
   cursor:pointer;display:inline-block;
-  font-family:'Cormorant Garamond',serif;
+  font-family:'DM Serif Display',serif;
   transition:color .14s;
 }
 .rc-name:hover{color:var(--teal);text-decoration:underline;text-underline-offset:3px;}
@@ -317,10 +285,10 @@ body{
 .msg-btn{
   display:inline-flex;align-items:center;gap:5px;
   padding:6px 13px;
-  background:var(--teal);color:white;
+  background:var(--teal);color:#0d0d0f;
   border:none;border-radius:var(--rxs);
   font-size:11.5px;font-weight:600;
-  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
   transition:all .14s;
 }
 .msg-btn:hover{background:var(--teal2);}
@@ -330,10 +298,7 @@ body{
   color:var(--ink4);font-size:13px;line-height:1.7;
 }
 
-/* ─── MAIN RIGHT ─── */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
-
-/* Empty */
+/* Empty state */
 .empty-main{
   flex:1;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
@@ -343,7 +308,7 @@ body{
 @keyframes fdin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .em-icon{font-size:52px;opacity:.3;margin-bottom:18px;}
 .em-title{
-  font-family:'Cormorant Garamond',serif;
+  font-family:'DM Serif Display',serif;
   font-size:26px;font-weight:400;font-style:italic;
   color:var(--ink2);margin-bottom:8px;
 }
@@ -371,11 +336,11 @@ body{
   width:70px;height:70px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:26px;font-weight:700;
-  font-family:'Cormorant Garamond',serif;
+  font-family:'DM Serif Display',serif;
   flex-shrink:0;
 }
 .dv-name{
-  font-family:'Cormorant Garamond',serif;
+  font-family:'DM Serif Display',serif;
   font-size:26px;font-weight:500;
   color:var(--ink);margin-bottom:2px;
   line-height:1.1;
@@ -393,15 +358,15 @@ body{
 }
 .big-msg-btn{
   padding:11px 24px;
-  background:var(--teal);color:white;
+  background:var(--teal);color:#0d0d0f;
   border:none;border-radius:var(--rsm);
   font-size:13.5px;font-weight:700;
-  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
   transition:all .15s;
   display:inline-flex;align-items:center;gap:8px;
-  box-shadow:0 3px 12px rgba(40,112,102,.28);
+  box-shadow:0 3px 12px rgba(200,169,110,.28);
 }
-.big-msg-btn:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 5px 16px rgba(40,112,102,.35);}
+.big-msg-btn:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 5px 16px rgba(200,169,110,.35);}
 
 .dv-sec{
   background:var(--white);
@@ -411,7 +376,7 @@ body{
   box-shadow:var(--sh);
 }
 .dv-sec-title{
-  font-family:'Cormorant Garamond',serif;
+  font-family:'DM Serif Display',serif;
   font-size:15px;font-weight:500;
   color:var(--ink2);margin-bottom:12px;
   display:flex;align-items:center;gap:7px;
@@ -432,7 +397,7 @@ body{
 .dv-review::before{
   content:'"';
   position:absolute;left:0;top:-4px;
-  font-size:32px;font-family:'Cormorant Garamond',serif;
+  font-size:32px;font-family:'DM Serif Display',serif;
   color:var(--ink4);line-height:1;
 }
 
@@ -462,7 +427,7 @@ body{
   width:38px;height:38px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:15px;font-weight:700;
-  font-family:'Cormorant Garamond',serif;
+  font-family:'DM Serif Display',serif;
   flex-shrink:0;
 }
 .cp-nm{font-size:14px;font-weight:600;line-height:1.2;}
@@ -483,7 +448,7 @@ body{
   display:flex;flex-direction:column;gap:10px;
 }
 .cp-msgs::-webkit-scrollbar{width:3px;}
-.cp-msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.cp-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px;}
 
 .cm{display:flex;flex-direction:column;max-width:85%;animation:popin .2s ease;}
 @keyframes popin{from{opacity:0;transform:scale(.95) translateY(4px)}to{opacity:1;transform:none}}
@@ -496,7 +461,7 @@ body{
   font-size:13px;line-height:1.55;
 }
 .cm.me .cm-bub{
-  background:var(--teal);color:white;
+  background:var(--teal);color:#0d0d0f;
   border-bottom-right-radius:4px;
 }
 .cm.them .cm-bub{
@@ -567,7 +532,7 @@ body{
   font-size:12.5px;font-weight:600;
   color:var(--ink3);
   cursor:pointer;
-  font-family:'Plus Jakarta Sans',sans-serif;
+  font-family:'DM Sans',sans-serif;
   transition:all .15s;
 }
 .back-nav-btn:hover{
@@ -584,7 +549,7 @@ body{
   animation:fdin .25s ease;
 }
 .compat-panel::-webkit-scrollbar{width:4px;}
-.compat-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.compat-panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px;}
 .cp-setup{
   background:var(--white);
   border:1px solid var(--border);
@@ -593,7 +558,7 @@ body{
   box-shadow:var(--sh);
 }
 .cp-setup-title{
-  font-family:'Cormorant Garamond',serif;
+  font-family:'DM Serif Display',serif;
   font-size:16px;font-weight:500;
   color:var(--ink2);margin-bottom:4px;
 }
@@ -609,13 +574,13 @@ body{
   background:var(--s1);border:1px solid var(--border);
   border-radius:var(--rsm);padding:8px 28px 8px 11px;
   font-size:12.5px;color:var(--ink2);
-  font-family:'Plus Jakarta Sans',sans-serif;
+  font-family:'DM Sans',sans-serif;
   outline:none;cursor:pointer;transition:border-color .17s;
   appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a89f95'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a7670'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 10px center;
 }
-.cp-select:focus{border-color:var(--teal);background-color:white;}
+.cp-select:focus{border-color:var(--teal);background-color:var(--s1);}
 .cp-tags-pick{display:flex;flex-wrap:wrap;gap:5px;}
 .cptag{
   padding:4px 10px;border-radius:100px;font-size:11.5px;
@@ -626,15 +591,15 @@ body{
 .cptag.on{background:var(--teal-bg);border-color:var(--teal-mid);color:var(--teal);font-weight:600;}
 .cp-setup-footer{margin-top:16px;display:flex;align-items:center;justify-content:space-between;}
 .match-btn{
-  padding:9px 22px;background:var(--teal);color:white;
+  padding:9px 22px;background:var(--teal);color:#0d0d0f;
   border:none;border-radius:var(--rsm);font-size:13px;font-weight:700;
-  cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;
+  cursor:pointer;font-family:'DM Sans',sans-serif;
   transition:all .15s;display:inline-flex;align-items:center;gap:7px;
 }
 .match-btn:hover{background:var(--teal2);}
 .match-hint{font-size:11.5px;color:var(--ink4);font-style:italic;}
 .compat-results-title{
-  font-family:'Cormorant Garamond',serif;
+  font-family:'DM Serif Display',serif;
   font-size:15px;font-weight:500;color:var(--ink2);
   display:flex;align-items:center;justify-content:space-between;
 }
@@ -653,7 +618,7 @@ body{
 .match-card:hover{border-color:var(--teal-mid);box-shadow:var(--shmd);}
 .match-card:hover::before{background:var(--teal);}
 .mc-rank{
-  font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;
+  font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;
   color:var(--ink4);min-width:28px;text-align:center;flex-shrink:0;
 }
 .mc-rank.gold{color:#b8870a;}
@@ -663,7 +628,7 @@ body{
   width:42px;height:42px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   font-size:15px;font-weight:700;
-  font-family:'Cormorant Garamond',serif;flex-shrink:0;
+  font-family:'DM Serif Display',serif;flex-shrink:0;
 }
 .mc-body{flex:1;min-width:0;}
 .mc-name{font-size:13.5px;font-weight:600;color:var(--ink);}
@@ -675,9 +640,9 @@ body{
   font-size:10.5px;padding:2px 8px;border-radius:100px;
   background:var(--teal-bg);border:1px solid var(--teal-mid);color:var(--teal);
 }
-.mc-reason.neg{background:var(--rose-bg);border-color:#e8b0b0;color:var(--rose);}
+.mc-reason.neg{background:var(--rose-bg);border-color:rgba(168,56,56,.35);color:var(--rose);}
 .mc-pct{
-  font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;
+  font-family:'DM Serif Display',serif;font-size:26px;font-weight:500;
   flex-shrink:0;min-width:52px;text-align:right;line-height:1;
 }
 .mc-msg{
@@ -713,7 +678,7 @@ body{
   background:var(--teal-bg);color:var(--teal);
   cursor:pointer;transition:all .13s;
 }
-.spark:hover{background:var(--teal);color:white;border-color:var(--teal);}
+.spark:hover{background:var(--teal);color:#0d0d0f;border-color:var(--teal);}
 .ai-regen{
   font-size:11px;color:var(--ink4);
   cursor:pointer;font-family:'DM Mono',monospace;
@@ -740,17 +705,17 @@ body{
   border-radius:var(--rsm);
   padding:9px 13px;
   font-size:13px;color:var(--ink);
-  font-family:'Plus Jakarta Sans',sans-serif;
+  font-family:'DM Sans',sans-serif;
   outline:none;resize:none;
   min-height:40px;max-height:100px;
   line-height:1.5;
   transition:border-color .17s,background .17s;
 }
-.cp-ta:focus{border-color:var(--teal);background:white;}
+.cp-ta:focus{border-color:var(--teal);background:var(--white);}
 .cp-ta::placeholder{color:var(--ink4);}
 .cp-send{
   width:40px;height:40px;border-radius:var(--rxs);
-  background:var(--teal);border:none;color:white;
+  background:var(--teal);border:none;color:#0d0d0f;
   font-size:15px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   transition:all .14s;flex-shrink:0;
@@ -761,33 +726,29 @@ body{
 </head>
 <body>
 
-<!-- Header -->
-<div class="hdr">
-  <div class="logo">
-    <div class="logo-mark">🪺</div>
-    <div>
-      <div style="display:flex;align-items:baseline;gap:6px">
-        <div class="logo-name">Nest</div>
-        <div class="logo-tag">roommate finder</div>
-      </div>
-    </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px">
+<nav>
+  <img src="images/nav_logo.png" alt="Logo" style="height:32px; margin-right:8px;">
+  <a href="index.html">Home</a>
+  <a href="apartment.html">Apartment</a>
+  <a href="studentchat.html" class="active">Chat</a>
+  <a href="finding.html">Find</a>
+  <div class="nav-right" style="display:flex;align-items:center;gap:10px;">
     <div class="you-chip">
       <div class="you-av">Y</div>
       <span>Signed in · Unit 3C</span>
     </div>
+    <a href="login.html" class="login">Login</a>
     <button class="hamburger" id="hamburger" onclick="toggleMenu()" title="Compatibility Profile">
       <span></span><span></span><span></span>
     </button>
   </div>
-</div>
+</nav>
 
 <!-- Compatibility Drawer -->
 <div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
 <div class="menu-drawer" id="menu-drawer">
   <div class="menu-drawer-hdr">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:var(--ink)">🧭 Compatibility Profile</div>
+    <div style="font-family:'DM Serif Display',serif;font-size:18px;font-weight:500;color:var(--ink)">🧭 Compatibility Profile</div>
     <div class="menu-close" onclick="closeMenu()">✕</div>
   </div>
   <div class="menu-drawer-body">
@@ -831,19 +792,37 @@ body{
 
 <!-- Main page: filters + tenant grid -->
 <div class="browse-page" id="browse-page">
-
-  <!-- Filter bar -->
   <div class="filter-bar">
     <div class="filter-bar-inner">
 
       <div class="fb-group">
         <div class="flabel">Rating</div>
         <div class="sf">
-          <span class="sf-s" data-v="1" onclick="setStar(1)">★</span>
-          <span class="sf-s" data-v="2" onclick="setStar(2)">★</span>
-          <span class="sf-s" data-v="3" onclick="setStar(3)">★</span>
-          <span class="sf-s" data-v="4" onclick="setStar(4)">★</span>
-          <span class="sf-s" data-v="5" onclick="setStar(5)">★</span>
+          <span class="sf-slot">
+            <span class="sf-bg">★</span><span class="sf-fg">★</span>
+            <span class="sf-half left"  onmouseover="hoverStar(0.5)" onmouseout="restoreStar()" onclick="setStar(0.5)"></span>
+            <span class="sf-half right" onmouseover="hoverStar(1)"   onmouseout="restoreStar()" onclick="setStar(1)"></span>
+          </span>
+          <span class="sf-slot">
+            <span class="sf-bg">★</span><span class="sf-fg">★</span>
+            <span class="sf-half left"  onmouseover="hoverStar(1.5)" onmouseout="restoreStar()" onclick="setStar(1.5)"></span>
+            <span class="sf-half right" onmouseover="hoverStar(2)"   onmouseout="restoreStar()" onclick="setStar(2)"></span>
+          </span>
+          <span class="sf-slot">
+            <span class="sf-bg">★</span><span class="sf-fg">★</span>
+            <span class="sf-half left"  onmouseover="hoverStar(2.5)" onmouseout="restoreStar()" onclick="setStar(2.5)"></span>
+            <span class="sf-half right" onmouseover="hoverStar(3)"   onmouseout="restoreStar()" onclick="setStar(3)"></span>
+          </span>
+          <span class="sf-slot">
+            <span class="sf-bg">★</span><span class="sf-fg">★</span>
+            <span class="sf-half left"  onmouseover="hoverStar(3.5)" onmouseout="restoreStar()" onclick="setStar(3.5)"></span>
+            <span class="sf-half right" onmouseover="hoverStar(4)"   onmouseout="restoreStar()" onclick="setStar(4)"></span>
+          </span>
+          <span class="sf-slot">
+            <span class="sf-bg">★</span><span class="sf-fg">★</span>
+            <span class="sf-half left"  onmouseover="hoverStar(4.5)" onmouseout="restoreStar()" onclick="setStar(4.5)"></span>
+            <span class="sf-half right" onmouseover="hoverStar(5)"   onmouseout="restoreStar()" onclick="setStar(5)"></span>
+          </span>
           <span class="sf-clr" id="sf-clr" onclick="setStar(0)">✕</span>
         </div>
       </div>
@@ -881,9 +860,7 @@ body{
     </div>
   </div>
 
-  <!-- Tenant grid -->
   <div class="tenant-grid" id="card-list"></div>
-
 </div>
 
 <!-- Detail / Rankings view -->
@@ -902,7 +879,6 @@ body{
 
   <div class="cp-msgs" id="cp-msgs"></div>
 
-  <!-- AI Compose -->
   <div class="ai-compose" id="ai-compose">
     <div class="ai-compose-hdr">
       <div class="ai-compose-label">✨ AI Suggestions</div>
@@ -921,6 +897,8 @@ body{
     </div>
   </div>
 </div>
+
+<footer>&copy; RMR Team 2026</footer>
 
 <script>
 // ─── DATA ────────────────────────────────────────────────────────────────────
@@ -1261,13 +1239,11 @@ function showCompatPanel() {
 }
 
 function syncInlineFilters() {
-  // Restore select values from current state
   const budgetEl = document.getElementById('my-budget');
   const schedEl  = document.getElementById('my-schedule');
   if (budgetEl) budgetEl.value = document.querySelector('#menu-drawer #my-budget')?.value || '';
   if (schedEl)  schedEl.value  = document.querySelector('#menu-drawer #my-schedule')?.value || '';
 
-  // Rebuild lifestyle tag chips in the inline bar, preserving myTags state
   const container = document.getElementById('my-tags-inline');
   if (!container) return;
   const allTags = [
@@ -1289,17 +1265,14 @@ function toggleMyTagInline(el) {
   const t = el.dataset.t;
   myTags.has(t) ? (myTags.delete(t), el.classList.remove('on'))
                 : (myTags.add(t),    el.classList.add('on'));
-  // Keep drawer tags in sync too
   const drawerTag = document.querySelector('#my-tags .cptag[data-t="' + t + '"]');
   if (drawerTag) drawerTag.classList.toggle('on', myTags.has(t));
 }
 
 function getInlineFilterValues() {
-  // Read from inline bar if present, else from drawer
   const budgetEl = document.getElementById('my-budget');
   const schedEl  = document.getElementById('my-schedule');
   if (budgetEl) {
-    // Sync back to drawer selects so scoreMatch reads correctly
     const drawerBudget = document.querySelector('#menu-drawer select#my-budget') ||
                          document.querySelector('select#my-budget');
     const drawerSched  = document.querySelector('#menu-drawer select#my-schedule') ||
@@ -1312,7 +1285,6 @@ function runMatch() {
     .map(t => ({ ...t, ...scoreMatch(t) }))
     .sort((a, b) => b.pct - a.pct);
 
-  // Build the rankings view into #main
   document.getElementById('browse-page').style.display = 'none';
   const main = document.getElementById('main');
   main.style.display = 'flex';
@@ -1355,9 +1327,9 @@ function runMatch() {
   const container = document.getElementById('match-results');
 
   function barColor(pct) {
-    if (pct >= 75) return '#287066';
-    if (pct >= 50) return '#b8731a';
-    return '#a83838';
+    if (pct >= 75) return '#c8a96e';
+    if (pct >= 50) return '#c8891a';
+    return '#c85050';
   }
 
   function rankLabel(i) {
@@ -1399,7 +1371,6 @@ function runMatch() {
 
   lastMatchHTML = container.innerHTML;
 
-  // Animate bars after paint
   requestAnimationFrame(() => {
     document.querySelectorAll('.mc-bar').forEach(b => {
       const w = b.style.width;
@@ -1413,7 +1384,7 @@ function runMatch() {
 function renderList() {
   const vis = tenants
     .filter(t => {
-      if (starMin && t.stars !== starMin) return false;  // exact star match
+      if (starMin && t.stars < starMin) return false;
       if (budgetSel && t.budget !== budgetSel) return false;
       if (kwSel.size) {
         const match = [...kwSel].some(k =>
@@ -1423,7 +1394,7 @@ function renderList() {
       }
       return true;
     })
-    .sort((a, b) => b.stars - a.stars);  // descending by star rating
+    .sort((a, b) => b.stars - a.stars);
 
   document.getElementById('shown').textContent = `${vis.length} shown`;
   const list = document.getElementById('card-list');
@@ -1464,7 +1435,6 @@ async function sendMsg() {
   chatHistories[id].push({role:'me', text, time: tstamp()});
   renderMsgs(id);
 
-  // Typing indicator
   const msgs = document.getElementById('cp-msgs');
   const ti = document.createElement('div');
   ti.className = 'cm them'; ti.id = 'ti';
@@ -1477,7 +1447,6 @@ async function sendMsg() {
   await sleep(delay);
   document.getElementById('ti')?.remove();
 
-  // AI reply as the tenant
   try {
     const reply = await callAPI(
       `You are ${t.name}, a tenant in an apartment building.
@@ -1546,14 +1515,25 @@ function useSpark(el) {
 }
 
 // ─── FILTERS ─────────────────────────────────────────────────────────────────
-function setStar(n) {
-  starMin = (starMin === n) ? 0 : n;  // clicking same star again clears it
-  document.querySelectorAll('.sf-s').forEach(s => {
-    s.classList.toggle('on', parseInt(s.dataset.v) <= starMin);  // fill 1 through N
+function updateSfDisplay(val) {
+  document.querySelectorAll('.sf-slot').forEach((slot, i) => {
+    const pos = i + 1;
+    const fg = slot.querySelector('.sf-fg');
+    if (pos <= val)           fg.style.width = '100%';
+    else if (pos - 0.5 <= val) fg.style.width = '50%';
+    else                       fg.style.width = '0%';
   });
+}
+
+function hoverStar(val) { updateSfDisplay(val); }
+function restoreStar()  { updateSfDisplay(starMin); }
+
+function setStar(n) {
+  starMin = (starMin === n) ? 0 : n;
+  updateSfDisplay(starMin);
   const clr = document.getElementById('sf-clr');
   clr.style.display = starMin > 0 ? 'inline' : 'none';
-  clr.textContent = starMin > 0 ? `✕ showing ${starMin}★` : '';
+  clr.textContent = starMin > 0 ? `✕ ${starMin}★+` : '';
   renderList();
 }
 
