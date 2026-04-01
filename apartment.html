@@ -48,7 +48,7 @@
 
                 // Rate button
                 const btn = document.createElement('button');
-                btn.className = isYou ? 'rate-btn disabled' : 'rate-btn';
+                `btn.className = isYou ? 'rate-btn disabled' : 'rate-btn';
                 btn.innerHTML = isYou ? '<span>You</span>' : '<span>Rate</span><span>▼</span>';
                 btn.disabled = isYou;
                 if (!isYou) btn.onclick = () => toggleDropdown(person);
