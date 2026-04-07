@@ -492,7 +492,9 @@ label {
 
 .input-wrap input[type="text"],
 .input-wrap input[type="email"],
-.input-wrap input[type="password"] {
+.input-wrap input[type="password"],
+.input-wrap input[type="tel"],
+.input-wrap input[type="url"] {
     width: 100%;
     background: var(--input-bg);
     border: 1px solid var(--border);
@@ -505,9 +507,56 @@ label {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.input-wrap input::placeholder { color: var(--muted); }
+.file-wrap input[type="file"] {
+    display: none;
+}
 
-.input-wrap input:focus {
+.file-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.file-label:hover {
+    border-color: rgba(200,169,110,0.5);
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.08);
+}
+
+.file-label.has-file {
+    color: var(--text);
+}
+
+.input-wrap textarea {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.input-wrap input::placeholder,
+.input-wrap textarea::placeholder { color: var(--muted); }
+
+.input-wrap input:focus,
+.input-wrap textarea:focus {
     border-color: rgba(200,169,110,0.5);
     box-shadow: 0 0 0 3px rgba(200,169,110,0.08);
 }

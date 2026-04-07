@@ -17,9 +17,9 @@
 
       <form onsubmit="handleSignup(event)">
         <div class="form-group">
-          <label for="name">Full Name</label>
+          <label for="username">Full Name</label>
           <div class="input-wrap">
-            <input type="text" id="name" placeholder="Jane Smith" autocomplete="name" required />
+            <input type="text" id="username" placeholder="Jane Smith" autocomplete="name" required />
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
             </svg>
@@ -37,12 +37,42 @@
         </div>
 
         <div class="form-group">
-          <label for="password">Password</label>
+          <label for="pass">Password</label>
           <div class="input-wrap">
-            <input type="password" id="password" placeholder="••••••••" autocomplete="new-password" required />
+            <input type="password" id="pass" placeholder="••••••••" autocomplete="new-password" required />
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <div class="input-wrap">
+            <input type="tel" id="phone" placeholder="(555) 000-0000" autocomplete="tel" required />
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bio">Bio</label>
+          <div class="input-wrap">
+            <textarea id="bio" placeholder="Tell your future roommates a little about yourself…" maxlength="250" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="image_url">Profile Picture</label>
+          <div class="file-wrap">
+            <input type="file" id="image_url" accept="image/*" />
+            <label for="image_url" class="file-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+              </svg>
+              <span id="file-label-text">Choose a photo…</span>
+            </label>
           </div>
         </div>
 
@@ -58,16 +88,58 @@
   </div>
 
   <script>
-    function handleSignup(e) {
+    document.getElementById('image_url').addEventListener('change', function () {
+      const label = document.getElementById('file-label-text');
+      const fileLabel = document.querySelector('.file-label');
+      if (this.files && this.files[0]) {
+        label.textContent = this.files[0].name;
+        fileLabel.classList.add('has-file');
+      } else {
+        label.textContent = 'Choose a photo…';
+        fileLabel.classList.remove('has-file');
+      }
+    });
+
+    async function handleSignup(e) {
       e.preventDefault();
       const btn = e.target.querySelector('.btn-primary');
       btn.textContent = 'Creating account…';
       btn.style.opacity = '0.7';
       btn.disabled = true;
-      setTimeout(() => {
-        btn.textContent = '✓ Account created!';
-        btn.style.background = '#4caf80';
-      }, 1200);
+
+      const body = {
+        username: document.getElementById('username').value,
+        email:    document.getElementById('email').value,
+        pass:     document.getElementById('pass').value,
+        phone:    document.getElementById('phone').value,
+        bio:      document.getElementById('bio').value,
+      };
+
+      try {
+        const res = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        if (res.ok) {
+          btn.textContent = '✓ Account created!';
+          btn.style.background = '#4caf80';
+        } else {
+          const err = await res.json();
+          btn.textContent = 'Something went wrong';
+          btn.style.background = '#c85050';
+          btn.style.opacity = '1';
+          btn.disabled = false;
+          alert(err.error || 'Could not create account. Please try again.');
+        }
+      } catch {
+        btn.textContent = 'Something went wrong';
+        btn.style.background = '#c85050';
+        btn.style.opacity = '1';
+        btn.disabled = false;
+        alert('Network error. Please check your connection and try again.');
+      }
     }
   </script>
 </body>
